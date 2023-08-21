@@ -59,7 +59,8 @@ To stop the local environment, Ctrl+C on the terminal and wait till the local ru
 2. Update de-airflow repo's requirements.txt with changes to be tested.
 2. Run the de-airflow script to deploy your changes:  `python ../deploy_scripts/deploy_latest_to_local_mwaa_runner.py`
 
-You can test the changes out by either starting the local runner again, or by running `./mwaa-local-env test-requirements`.
+You can test the changes out by either starting the local runner again, `./mwaa-local-env start` or by running `./mwaa-local-env test-requirements`.
+Then, carefully analyze the console output for any errors that arise during the pip installation process or other issues.
 
 ## Testing Changes to DAGs
 
