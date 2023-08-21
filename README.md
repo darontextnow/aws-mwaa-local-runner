@@ -19,7 +19,7 @@ git clone git@github.com:darontextnow/aws-mwaa-local-runner.git
 cd aws-mwaa-local-runner
 ```
 
-- This repo is setup to authenticate to AWS using the withokta profile name of "dev-datascience" and should use the DataScience role of the dev AWS account. 
+This repo is setup to authenticate to AWS using the withokta profile name of "dev-datascience" and should use the DataScience role of the dev AWS account. 
 If you use a different profile name, you must change the value for the environment variable "AWS_PROFILE" in the file ''aws-mwaa-local-runner/docker/docker-compose-local.yml'' to the name of the profile you authenticate locally with.
 
 ## Get started
@@ -57,7 +57,7 @@ To stop the local environment, Ctrl+C on the terminal and wait till the local ru
 
 1. If airflow lcoal runner is currently running, stop it (Ctrl+C).
 2. Update de-airflow repo's requirements.txt with changes to be tested.
-2. Run the script de-airflow script to deploy your changes:  `python ../deploy_scripts/deploy_latest_to_local_mwaa_runner.py`
+2. Run the de-airflow script to deploy your changes:  `python ../deploy_scripts/deploy_latest_to_local_mwaa_runner.py`
 
 You can test the changes out by either starting the local runner again, or by running `./mwaa-local-env test-requirements`.
 
