@@ -53,14 +53,16 @@ To stop the local environment, Ctrl+C on the terminal and wait till the local ru
 - Password: `test`
 
 
-## Adding and Testng Changes to requirements.txt.
+## Testng Changes to requirements.txt.
 
-1. If airflow lcoal runner is currently running, stop it (Ctrl+C).
+1. If airflow local runner is currently running, stop it (Ctrl+C).
 2. Update de-airflow repo's requirements.txt with changes to be tested.
 2. Run the de-airflow script to deploy your changes:  `python ../deploy_scripts/deploy_latest_to_local_mwaa_runner.py`
 
-You can test the changes out by either starting the local runner again, `./mwaa-local-env start` or by running `./mwaa-local-env test-requirements`.
-Then, carefully analyze the console output for any errors that arise during the pip installation process or other issues.
+You can test the changes out by running `./mwaa-local-env test-requirements`.
+Analyze the console output for any errors that arise during the pip installation process or other issues.
+
+Then, restart the airflow local runner `./mwaa-local-env start` and ensure the UI doesn't show any errors issue with DAGs.
 
 ## Testing Changes to DAGs
 
