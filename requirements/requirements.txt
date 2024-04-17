@@ -1,4 +1,47 @@
---constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.8.1/constraints-3.11.txt"
+# requirements for LOCAL dev setup and testing.
+# Use with Python 3.11.9 which is the tested version for Airflow 2.8.1
+# The requirements.txt file used in dev and prod MWAA envs is stored and updated via the infrastructure repository.
+# versioning should stay in sync with mwaa constraints as much as possible.
 
-apache-airflow-providers-snowflake==5.2.1
-apache-airflow-providers-mysql==5.5.1
+--constraint "../dags/dag_dependencies/constraints-2_8_1.txt"
+
+apache_airflow==2.8.1                            # this is the version of MWAA we are running
+apache-airflow-providers-amazon==8.16.0          # taken directly from MWAA v2.8.1 constraints
+apache-airflow-providers-mysql==5.5.1            # taken directly from MWAA v2.8.1 constraints
+apache-airflow-providers-snowflake==5.2.1        # taken directly from MWAA v2.8.1 constraints
+apache-airflow-providers-google==10.13.1         # taken directly from MWAA v2.8.1 constraints
+apache-airflow-providers-cncf-kubernetes==7.13.0 # taken directly from MWAA v2.8.1 constraints
+apache-airflow-providers-sftp==4.8.1             # taken directly from MWAA v2.8.1 constraints
+
+# tndbo requirements not installed by airflow. Keep these in sync with versions in de_utils.
+mysqlclient==2.2.4   # had to ignore MWAA v2.8.1 constraints version as 2.2.4 fixed a bug with installation
+pymysql==1.1.0       # latest version at time of testing this package
+slack-sdk==3.26.2    # taken directly from MWAA v2.8.1 constraints
+
+# required by pandas s3 integration. Keep in sync with MWAA constraints and de_utils
+fsspec==2023.12.2    # taken from MWAA v2.8.1 constraints
+s3fs==2023.12.2      # taken from MWAA v2.8.1 constraints
+
+# additional packages needed for specific DAG use
+google-play-scraper==1.2.6              # required by android_competitor_reviews_extract.py. Version was latest version.
+prometheus_api_client==0.5.5            # required to retrieve prometheus metrics. Version was latest when added here.
+braintree==4.28.0                       # required by braintree_extract.py. Version was latest when added here.
+python-jose==3.3.0                      # required by app_store_..._reports.py. version taken from v2.8.1 constraints.
+networkx==3.2.1                         # required by dau_processing.py. Version taken from MWAA v2.8.1 constraints.
+google-ads==22.1.0                      # required by google_ads_extract. Version from MWAA constraints doesn't work.
+googleads==41.0.0                       # required by google_ad_manager_extract. Version was latest when added here.
+twilio==9.0.4                           # latest version at time of testing this package
+stripe==9.2.0                           # latest version at time of testing this package
+airflow-dbt-python[snowflake,s3]==2.0.1 # latest version at time of testing this package
+dbt-core==1.7.12                        # latest version at time of testing this package
+dbt-snowflake==1.7.3                    # latest version at time of testing this package
+
+# required for tox testing suite
+tox==4.11.4                 # latest version that was compatible with MWAA 2.8.1 constraints
+flake8==7.0.0               # latest version when upgrading to MWAA 2.8.1
+flake8-bugbear
+flake8-docstrings>=1.7.0
+flake8-typing-imports
+pep8-naming
+pytest==7.4.4               # taken directly from MWAA v2.8.1 constraints
+pytest-cov==4.1.0           # taken directly from MWAA v2.8.1 constraints
