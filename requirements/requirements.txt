@@ -1,7 +1,7 @@
 # requirements for LOCAL dev setup and testing.
 # Use with Python 3.11.9 which is the tested version for Airflow 2.8.1
 # The requirements.txt file used in dev and prod MWAA envs is stored and updated via the infrastructure repository.
-# versioning should stay in sync with mwaa constraints as much as possible.
+# Package versioning should stay in sync with airflow published constraints as much as possible.
 
 --constraint "../dags/dag_dependencies/constraints-2_8_1.txt"
 
