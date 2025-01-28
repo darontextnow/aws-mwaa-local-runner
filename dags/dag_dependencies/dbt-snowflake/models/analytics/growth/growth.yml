@@ -1,0 +1,273 @@
+models:
+
+  - name: growth_dau_by_segment
+    description: Mapping daily active users to TextNow User Type (subscription type, ad upgrade type and phone number upgrade type) and RFM segment except for bad sets
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - user_set_id
+            - client_type
+    columns:
+      - name: date_utc
+        description: active date
+        tests:
+          - not_null
+      - name: user_set_id
+        description: user set IDs
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - not_null
+      - name: sub_type
+        description: type of TextNow interal plan being subscribed
+        tests:
+          - accepted_values:
+              values: [ 'TN Employee/with data', 'Non-Sub', 'paid/with data','paid/no data','free/no data','free/with data' ]
+      - name: consumable_type
+        description: type of consumable product being purchased
+      - name: ad_upgrade_type
+        description: type of Ad upgrade plan being subscribed via IAP
+      - name: phone_num_upgrade_type
+        description: type of phone number upgrade plan being subscribed via IAP
+      - name: rfm_segment
+        description: RFM segment
+        tests:
+          - accepted_values:
+              values: [ 'loyal', 'promising', 'at_risk', 'leaving', 'infrequent', 'new_users', 'other_users' ]
+      - name: dau
+        description: dau
+        tests:
+          - not_null
+
+  - name: growth_installs_dau_generation
+    description: Active User and DAU generation for each Install
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - adjust_id
+            - client_type
+    columns:
+      - name: adjust_id
+        description: Adjust's device identifier
+        tests:
+          - not_null
+      - name: installed_at
+        description: timestamp of the install event
+        tests:
+          - not_null
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: [ 'TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS' ]
+      - name: is_organic
+        description: whether the install is organic
+      - name: user_set_id
+        description: the User Set associated with this install
+      - name: new_user_install
+        description: 1 if this device formed a new user set within 14 days of install date, 0 otherwise
+      - name: old_user_install
+        description: 1 if this device was assigned to an pre-existing user set, 0 otherwise
+      - name: user_set_cohort_utc
+        description: the cohort date of the associated user set
+      - name: week2_retained
+        description: 1 if the associated user set is active in week 2, 0 otherwise
+      - name: w2r_prob
+        description: probability of install being week 2 retained estimated on day 3
+      - name: was_week2_retained
+        description: 1 if the associated user set was ever counted as week 2 retained prior to this install. Only applicable to old user installs.
+      - name: c_n
+        description: Active User generation coefficient per week 2 retained applicable to this user set
+      - name: dau_lift_per_c_n
+        description: DAU generation per Active User applicable to this user set
+      - name: active_user_generation
+        description: Active User generation for this device
+      - name: dau_generation
+        description: DAU generation for this device
+
+  - name: growth_ua_report
+    description: UA Performance Report
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - cohort_day
+            - geo
+            - client_type
+            - network_name
+            - campaign_name
+            - adgroup_name
+    columns:
+      - name: cohort_day
+        description: Cohort Date (based on install date)
+        tests:
+          - not_null
+      - name: cohort_week
+        description: Cohort Week (based on install date). Weeks start on Mondays
+        tests:
+          - not_null
+      - name: cohort_month
+        description: Cohort Month (based on install date)
+        tests:
+          - not_null
+      - name: cohort_year
+        description: Cohort Year (based on install date)
+        tests:
+          - not_null
+      - name: geo
+        description: Geographical Area (US/CA/International)
+        tests:
+          - not_null
+          - accepted_values:
+              values: [ 'US', 'CA', 'Non-US/CA' ]
+      - name: client_type
+        description: client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: [ 'TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS' ]
+      - name: network_name
+        description: Attributed Network
+        tests:
+          - not_null
+      - name: campaign_name
+        description: Attributed Campaign
+        tests:
+          - not_null
+      - name: adgroup_name
+        description: Attributed Adgroup
+        tests:
+          - not_null
+      - name: installs
+        description: Install count, consisting of New User Installs, Old User Installs and installs not associated with any account
+      - name: new_user_installs
+        description: Number of installs belonging to new users
+      - name: old_user_installs
+        description: Number of installs belonging to existing users
+      - name: week2_retained
+        description: 1 if the associated user set is active in week 2, 0 otherwise
+      - name: d3_retained
+        description: Actual number of installs retained on day 3
+      - name: w2_retained
+        description: Actual number of installs retained in week 2
+      - name: w2r_prob
+        description: Predicted number of installs retained in week 2
+      - name: dau_generation
+        description: Estimated DAU generation, based on w2_retained, or w2r_prob
+      - name: first_comm
+        description: Number of installs that had at least one outbound communication event
+      - name: ltv365
+        description: Total value of the segment for the 365 days since cohort_utc
+      - name: outbound_call_d1
+        description: total number of unique device id's which makes at least 1 outbound call lasting > 10 seconds in the first 24 hours after registration
+      - name: lp_sessions_gte4_d1
+        description: total number of unique device id's with at least 4 Leanplum sessions lasting > 10 seconds in the first 24 hours after registration
+      - name: combined_event
+        description: total number of device id's which meets abive criteria (lp_sessions + outbound_call)
+      - name: installation_type
+        description: To differentiate between SKAD network installs and rest of the installs
+      - name: network_name_root
+        description: Each partner has multiple network's.This field would help calculate CPI at partner level
+
+  - name: growth_ua_ltv
+    description: UA Performance Report with ltv
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - cohort_day
+            - geo
+            - client_type
+            - network_name
+            - campaign_name
+    columns:
+      - name: cohort_day
+        description: Cohort Date (based on install date)
+        tests:
+          - not_null
+      - name: cohort_week
+        description: Cohort Week (based on install date). Weeks start on Mondays
+        tests:
+          - not_null
+      - name: cohort_month
+        description: Cohort Month (based on install date)
+        tests:
+          - not_null
+      - name: cohort_year
+        description: Cohort Year (based on install date)
+        tests:
+          - not_null
+      - name: geo
+        description: Geographical Area (US/CA/International)
+        tests:
+          - not_null
+          - accepted_values:
+              values: [ 'US', 'CA', 'Non-US/CA' ]
+      - name: client_type
+        description: client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: [ 'TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS' ]
+      - name: network_name
+        description: Attributed Network
+        tests:
+          - not_null
+      - name: campaign_name
+        description: Attributed Campaign
+        tests:
+          - not_null
+      - name: ua_cost
+        description: adspend data
+      - name: installs
+        description: Install count, consisting of New User Installs,Old User Installs and installs not associated with any account
+      - name: new_user_installs
+        description: Number of installs belonging to new users
+      - name: old_user_installs
+        description: Number of installs belonging to existing users
+      - name: d3_retained
+        description: Actual number of installs retained on day 3
+      - name: w2_retained
+        description: Actual number of installs retained in week 2
+      - name: synthetic_w2r
+        description: Actual number of installs retained in week 2
+      - name: dau_generation
+        description: Estimated DAU generation, based on w2_retained, or w2r_prob
+      - name: new_users_d0_activ_days
+        description: total dau for new users who are active on day 1
+      - name: new_users_d1_d7_activ_days
+        description: total dau for new users who are active between day 1 and day 7
+      - name: new_users_d8_d14_activ_days
+        description: total dau for new users who are active between day 8 and day 14
+      - name: new_users_d15_d21_activ_days
+        description: total dau for new users who are active between day 15 and day 21
+      - name: new_users_d22_d28_activ_days
+        description: total dau for new users who are active between day 22 and day 28
+      - name: new_users_d29_d30_activ_days
+        description: total dau for new users who are active between day 29 and day 30
+      - name: new_users_m02_m03_active_days
+        description: total dau for new users who are active between month 2 and month 3
+      - name: new_users_m04_m06_active_days
+        description: total dau for new users who are active between month 4 and month 6
+      - name: new_users_m07_m12_active_days
+        description: total dau for new users who are active between month 7 and month 12
+      - name: active_days_365
+        description: is the predicted number of active days in the 365 days after install date
+      - name: active_days_730
+        description: is the predicted number of active days in the 730 days after install date
+      - name: active_days_365_new_installs
+        description: is the predicted number of active days in the 365 days after install date for new installs
+      - name: active_days_365_resinstalls
+        description: is the predicted number of active days in the 365 days after install date for re installs
+      - name: active_days_730_new_installs
+        description: is the predicted number of active days in the 730 days after install date for new installs
+      - name: active_days_730_resinstalls
+        description: is the predicted number of active days in the 730 days after install date for re installs
+      - name: ltv_365
+        description: is the estimated 1-year lifetime value from install date, calculated as active_days_365 multiplied by the profit margin
+      - name: ltv_730
+        description: is the estimated 1-year lifetime value from install date, calculated as active_days_730 multiplied by the profit margin
+      - name: network_name_root
+        description: Each partner has multiple network's.This field would help caluclate CPI at partner level

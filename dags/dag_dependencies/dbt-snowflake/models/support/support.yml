@@ -1,0 +1,54 @@
+version: 2
+
+sources:
+  - name: support
+    tables:
+      - name: dates
+        description: Contains dates since 2015-01-01 to 2097-02-18
+        columns:
+          - name: date_utc
+            description: date
+          - name: days_in_month
+            description: number of days in the corresponding month
+      - name: timezones
+      - name: tl_2020_us_county
+      - name: tl_2023_us_zcta520
+      - name: timezone_boundary
+        identifier: timezone_boundary_2024a
+        description: data from https://github.com/evansiroky/timezone-boundary-builder/releases/tag/2024a
+      - name: device_model_release_date_price
+      - name: ios_device_model_release_date_price
+      - name: zip_dma_mapping_2020
+      - name: us_zip_code_mapping
+      - name: zillow_zip_homevalue
+      - name: location_businesses_tacobell
+      - name: location_businesses_mcdonalds
+      - name: location_businesses_dunkin
+      - name: location_businesses_starbucks
+      - name: location_businesses_burgerking
+      - name: location_businesses_wendys
+      - name: location_businesses_jackinthebox
+      - name: location_businesses_inandout
+      - name: location_businesses_pizzahut
+      - name: hr_census_hhi_acsst5y2022_s1901_120124
+      - name: hr_census_population_decennialdhc2020_p2_120124
+
+models:
+  - name: utm_trackers
+    description: P1 BI-generated trackers for UTM campaigns (Web)
+    constraints:
+      - type: primary_key
+        columns: [ client_type, tracker ]
+    columns:
+      - name: client_type
+        constraints:
+          - type: not_null
+      - name: tracker
+        constraints:
+          - type: not_null
+      - name: network_name
+        constraints:
+          - type: not_null
+      - name: campaign_name
+      - name: adgroup_name
+      - name: creative_name

@@ -1,0 +1,84 @@
+version: 2
+
+sources:
+  - name: dau
+    tables:
+      - name: daily_active_users
+      - name: user_device_master
+      - name: set_cohort
+      - name: user_set
+      - name: device_set
+
+models:
+  - name: bad_sets
+    description: contains set_uuid and disabled_date for all bad/disabled user sets.
+    constraints:
+      - type: primary_key
+        columns: [ set_uuid ]
+    columns:
+      - name: set_uuid
+        constraints:
+          - type: not_null
+      - name: disabled_date
+        constraints:
+          - type: not_null
+      - name: inserted_at
+        constraints:
+          - type: not_null
+
+  - name: username_active_days
+    description: username_active_days
+    constraints:
+      - type: primary_key
+        columns: [ username, day_from_registration ]
+    columns:
+      - name: username
+        constraints:
+          - type: not_null
+      - name: created_at
+        constraints:
+          - type: not_null
+      - name: day_from_registration
+        constraints:
+          - type: not_null
+      - name: active_date
+
+  - name: adjust_reattributed_active_days
+    description: P1 Device retention data for reattributed installs
+    constraints:
+      - type: primary_key
+        columns: [ app_id, adid, created_at, day_from_reattributed ]
+    columns:
+      - name: app_id
+        constraints:
+          - type: not_null
+      - name: adid
+        constraints:
+          - type: not_null
+      - name: created_at
+        constraints:
+          - type: not_null
+      - name: active_date
+      - name: day_from_reattributed
+        constraints:
+          - type: not_null
+
+  - name: adjust_install_active_days
+    description: P1 Device retention data for regular installs
+    constraints:
+      - type: primary_key
+        columns: [ app_id, adid, day_from_install ]
+    columns:
+      - name: app_id
+        constraints:
+          - type: not_null
+      - name: adid
+        constraints:
+          - type: not_null
+      - name: installed_at
+        constraints:
+          - type: not_null
+      - name: active_date
+      - name: day_from_install
+        constraints:
+          - type: not_null

@@ -1,0 +1,108 @@
+CLIENT_TYPE,SKU,sku_validity_days,FEATURE,RENEWAL_PERIOD,SELLING_PRICE_USD,DEVELOPER_PROCEEDS_USD
+2L_ANDROID,10_dollars_international_credit,,International Credit - $10,,10,
+TN_ANDROID,10_dollars_international_credit,,International Credit - $10,,10,
+TN_ANDROID,100credits,,International Credit ,,1.99,
+TN_IOS_FREE,100CREDS,,International Credit ,,1.99,1.4
+2L_ANDROID,20_dollars_international_credit,,International Credit - $20,,20,
+TN_ANDROID,20_dollars_international_credit,,International Credit - $20,,20,
+TN_ANDROID,200credits,,International Credit ,,2.99,
+TN_IOS_FREE,200CREDS,,International Credit ,,3.99,2.8
+2L_ANDROID,5_dollars_international_credit,0,International Credit - $5,,5,
+TN_ANDROID,5_dollars_international_credit,0,International Credit - $5,,5,
+TN_ANDROID,500credits,,International Credit ,,6.99,
+TN_IOS_FREE,500CREDS,,International Credit ,,9.99,7
+TN_ANDROID,adfreelite.7_day_trial,7,Ad Free Lite,monthly,1.99,
+TN_ANDROID,adfreelite.month,30,Ad Free Lite,monthly,1.99,
+TN_ANDROID,adfreeplus.1month.4.99,30,Ad Free+,monthly,4.99,
+TN_ANDROID,adfreeplus.1month.6.99,30,Ad Free+,monthly,6.99,
+TN_ANDROID,adfreeplus.1month.7.99,30,Ad Free+,monthly,7.99,
+TN_ANDROID,adfreeplus.1week.6.99,7,Ad Free+,weekly,6.99,
+TN_ANDROID,adfreeplus.7_day_trial,7,Ad Free+,monthly,9.99,
+TN_ANDROID,adremoval1month,30,Ad Free+,monthly,0.99,
+TN_ANDROID,adremoval1year,365,Ad Free+,annually,5.99,
+TN_ANDROID,callforwarding1month,30,Calling Forward,monthly,2.99,
+TN_ANDROID,callforwarding1year,365,Calling Forward,annually,29.99,
+TN_IOS,com.enflick.ios.textnow.adremoval.month,30,Ad Free+,monthly,0.99,0.7
+TN_IOS,com.enflick.ios.textnow.adremoval.year,365,Ad Free+,annually,5.99,4.2
+TN_IOS,com.enflick.ios.textnow.autorenew.month,30,Ad Free+,monthly,2.99,2.1
+TN_IOS,com.enflick.ios.textnow.autorenew.year,365,Ad Free+,annually,29.99,21
+TN_IOS,com.enflick.ios.textnow.credits.fivehundred,,International Credit ,,7.99,5.6
+TN_IOS,com.enflick.ios.textnow.credits.onehundred,,International Credit ,,1.99,1.4
+TN_IOS,com.enflick.ios.textnow.internationalcredit.fivedollars,,International Credit - $5,,4.99,3.5
+TN_IOS,com.enflick.ios.textnow.internationalcredit.tendollars,,International Credit - $10,,9.99,7
+TN_IOS,com.enflick.ios.textnow.internationalcredit.twentydollars,,International Credit - $20,,20,14
+TN_IOS,com.enflick.ios.textnow.premium.1.month,30,Ad Free+,monthly,2.99,2.1
+TN_IOS,com.enflick.ios.textnow.premium.1.year,365,Ad Free+,annually,29.99,21
+TN_IOS,com.enflick.ios.textnow.soundpack,,Premium Sound Package,monthly,0.99,0.7
+TN_IOS,com.enflick.ios.textnow.voice.month,30,Calling Forward,monthly,2.99,2.1
+TN_IOS,com.enflick.ios.textnow.voice.year,365,Calling Forward,annually,29.99,21
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.adfreelite,0,Ad Free Lite,monthly,1.99,1.4
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.adfreeplus.1week.3.49,7,Ad Free+,weekly,3.49,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.adfreeplus.1week.4.99,7,Ad Free+,weekly,4.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.adfreeplus.1week.5.49,7,Ad Free+,weekly,5.49,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.adfreeplus.1week.6.99,7,Ad Free+,weekly,6.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.adfreeplus.1week.6.99_3dayfreetrial,10,Ad Free+,weekly,6.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.freecellularv1.month_14dayfreetrial,45,Ad Free+,monthly,9.99,7
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.freecellularv1.year_30dayfreetrial,395,Ad Free+,annually,99.99,70
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.locknumber.1month,30,Lock In Number,monthly,4.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.locknumber.1month.0.99,30,Lock In Number,monthly,0.99,0.7
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.locknumber.1month.1_99,30,Lock In Number,monthly,1.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.locknumber.1month.2.99,30,Lock In Number,monthly,2.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.locknumber.1month.4.99,30,Lock In Number,monthly,4.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.locknumber.1week.1.99,7,Lock In Number,weekly,1.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.locknumber.1year,365,Lock In Number,annually,2.99,2.1
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.locknumber.1year.1,365,Lock In Number,annually,0.99,0.7
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.locknumber.1year.3.99,365,Lock In Number,annually,3.99,2.8
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.locknumber.1year.5,365,Lock In Number,annually,4.99,3.5
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.month,30,Ad Free+,monthly,2.99,2.1
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.month_14dayfreetrial,44,Ad Free+,monthly,2.99,2.1
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.month_14dayfreetrial_variant_499,44,Ad Free+,monthly,4.99,3.5
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.premiumnumber.1year,365,Premium Number,annually,4.99,3.5
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.pro_plan.1month,30,TextNow Pro,monthly,10.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.pro_plan.1month_7dayfreetrial,37,TextNow Pro,monthly,10.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.year,365,Ad Free+,annually,29.99,21
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.year_30dayfreetrial,395,Ad Free+,annually,29.99,21
+TN_IOS_FREE,com.tinginteractive.usms.internationalcredit.fivedollars,0,International Credit - $5,,4.99,3.5
+TN_IOS_FREE,com.tinginteractive.usms.internationalcredit.tendollars,0,International Credit - $10,,9.99,7
+TN_IOS_FREE,com.tinginteractive.usms.internationalcredit.twentydollars,0,International Credit - $20,,19.99,14
+TN_IOS_FREE,com.tinginteractive.usms.premium.1.month,30,Ad Free+,monthly,2.99,2.1
+TN_IOS_FREE,com.tinginteractive.usms.premium.1.year,365,Ad Free+,annually,29.99,21
+2L_ANDROID,freecellularv1premium1monthsubscription,30,Ad Free+,monthly,9.99,
+TN_ANDROID,freecellularv1premium1monthsubscription,30,Ad Free+,monthly,9.99,
+TN_ANDROID,freecellularv1premium1yearsubscription,365,Ad Free+,annually,99.99,
+TN_ANDROID,lock_number.1month.2.49,30,Lock In Number,monthly,2.49,
+TN_ANDROID,lock_number.1month.3.49,30,Lock In Number,monthly,3.49,
+TN_ANDROID,lock_number.1month.3.99,30,Lock In Number,monthly,3.99,
+TN_ANDROID,lock_number.1month.4.99,30,Lock In Number,monthly,4.99,
+TN_ANDROID,lock_number.1week.1.99,7,Lock In Number,weekly,1.99,
+TN_ANDROID,lock_number.year.5,365,Lock In Number,annually,4.99,
+TN_ANDROID,premium_number.year,365,Premium Number,annually,4.99,
+2L_ANDROID,premium1monthsubscription,30,Ad Free+,monthly,2.99,
+TN_ANDROID,premium1monthsubscription,30,Ad Free+,monthly,2.99,
+2L_ANDROID,premium1monthsubscription_14dayfreetrial,44,Ad Free+,monthly,2.99,
+TN_ANDROID,premium1monthsubscription_14dayfreetrial,44,Ad Free+,monthly,2.99,
+2L_ANDROID,premium1monthsubscription_1monthintro,60,Ad Free+,monthly,2.99,
+TN_ANDROID,premium1monthsubscription_1monthintro,60,Ad Free+,monthly,2.99,
+TN_ANDROID,premium1monthsubscription_30dayfreetrial,60,Ad Free+,monthly,2.99,
+2L_ANDROID,premium1monthsubscription_599,,Ad Free+,monthly,4.99,
+2L_ANDROID,premium1monthsubscription_7dayfreetrial,37,Ad Free+,monthly,2.99,
+TN_ANDROID,premium1monthsubscription_7dayfreetrial,37,Ad Free+,monthly,2.99,
+TN_ANDROID,premium1yearsubscription,365,Ad Free+,annually,29.99,
+2L_ANDROID,premium1yearsubscription_30dayfreetrial,395,Ad Free+,annually,29.99,
+TN_ANDROID,premium1yearsubscription_30dayfreetrial,395,Ad Free+,annually,29.99,
+2L_ANDROID,premium1yearsubscription_5999,,Ad Free+,annually,49.99,
+2L_ANDROID,premium1yearsubscription2,365,Ad Free+,annually,29.99,
+TN_ANDROID,pro_plan.1month,30,TEXT_NOW_PRO,monthly,10.99,
+TN_ANDROID,premium_number.month,30,Premium Number,monthly,4.99,
+TN_ANDROID,textnow_pro.1month,30,TextNow Pro,monthly,10.99,
+TN_ANDROID,lock_number.1week.0.99,7,Lock In Number,weekly,0.99,
+TN_ANDROID,adfreeplus.1week.4.99,7,Ad Free+,weekly,4.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.locknumber.1week.0.99,7,Lock In Number,weekly,0.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.premiumnumber.1month,30,Premium Number,monthly,4.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.adfreeplus.1week.2.99,7,Ad Free+,weekly,2.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.pro_plan.1week,7,TextNow Pro,weekly,,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.locknumber.1week.1.49,7,Lock In Number,weekly,1.49,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.adfreeplus.1week.3.99,7,Ad Free+,weekly,3.99,
+TN_IOS_FREE,com.tinginteractive.usms.autorenew.adfreeplus.1week.5.99,7,Ad Free+,weekly,5.99,
+TN_ANDROID,premium1weeksubscription_3dayfreetrial,7,Ad Free+,weekly,,
+TN_ANDROID,premium1weeksubscription_v2,7,Ad Free+,weekly,,

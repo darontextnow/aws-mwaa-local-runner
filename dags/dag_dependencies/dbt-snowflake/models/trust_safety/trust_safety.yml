@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: login_60d_requests
+    description: Tracking unique usernames with successful login requests in the last 60 days
+    columns:
+      - name: username
+
+  - name: paying_users_30d
+    description: Tracking unique usernames with IAP in the last 30 days
+    columns:
+      - name: username
+      - name: purchased

@@ -1,0 +1,92 @@
+version: 2
+
+seeds:
+  - name: iap_sku_feature_mapping
+    description: IAP SKU feature mapping
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - client_type
+            - sku
+            - feature
+            - renewal_period
+
+  - name: location_county_dma
+    config:
+      column_types:
+        geoid: varchar(5)
+        tvdma: varchar(100)
+
+  - name: location_state_geocodes_v2020
+    config:
+      column_types:
+        region: varchar(1)
+        division: varchar(1)
+        statefp: varchar(2)
+        name: varchar(100)
+
+  - name: network_campaigns_mapping
+    description: network_campaigns_mapping with spend type
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - network_name
+            - network_name_root
+            - network_spend_type
+
+  - name: projected_ua_inputs
+    description: Projected daily UA values containing UA inputs we expect to observe.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - fiscal_day
+
+  - name: subscription_rate_plans
+    config:
+      column_types:
+        subscription_rate_plan_id: int
+        code: varchar(255)
+        details: varchar(255)
+        roam: boolean
+        cdma: boolean
+        network: int
+        lte: boolean
+        data_link: boolean
+        pooled: boolean
+        data_size: int
+        mou_size: int
+        mrc: float
+        per_mou_overage_fee: float
+        per_mb_overage_fee: float
+        sms_overage_fee: float
+        plan_start_date: date
+        plan_end_date: date
+
+  - name: ua_margin_per_active_day
+    description: Margin per Active Day for LTV calc
+    config:
+      column_types:
+        year_month: date
+
+  - name: ua_margin_per_active_day_by_geo
+    description: "Margin per Active Day for LTV calc by US and CA. Source: https://enflick.sharepoint.com/:x:/s/FinanceTeam/EaBddIkVl1VMljoOQOrjsdkBAhZ1vLJfH6jx3JoVcHd9HA?e=CflwFR&nav=MTVfezU4MEJDM0E0LTNBN0MtNDhDNS05RDRGLTUzQzE3MDRBMUU2NX0"
+    config:
+      column_types:
+        year_month: date
+
+  - name: user_segment_rfm_priority
+    description: mapping RFM segment to a corresponding order
+    columns:
+      - name: rfm_priority
+        description: the priority of the RFM segment (A smaller number takes a higher priority)
+      - name: rfm_segment
+        description: RFM segment
+
+  - name: user_segment_tn_type_priority
+    description: mapping TextNow Type (subscription type, ad upgrade type and phone number upgrade type) to a corresponding precedence 
+      (Wireless Subs > NWTT Subs > Free; Ad Free+ > Ad Free Lite; Premium Number > Lock In Number; Annual > Monthly)
+    columns:
+      - name: tn_type_priority
+        description: the priority of the TextNow Type (A smaller number takes a higher priority)
+      - name: tn_type
+        description: TextNow Type

@@ -1,0 +1,73 @@
+version: 2
+
+sources:
+  - name: braintree
+    schema: billing_service
+    tables:
+      - name: braintree_transactions
+
+models:
+  - name: braintree_charges
+    columns:
+      - name: braintree_charge_id
+        description: charge id
+        tests:
+          - not_null
+          - unique
+      - name: created_at
+        description: date of transaction
+      - name: updated_at
+        description: updated at
+      - name: category
+        description: capture or the successful transaction
+        tests:
+          - accepted_values:
+              values: ['capture']
+      - name: payment_provider
+        description: Braintree is the payment provider
+        tests:
+          - accepted_values:
+              values: ['Braintree']
+      - name: identifier
+        description: Braintree transaction id
+      - name: amount
+        description: amount of transaction
+        tests:
+          - not_null
+      - name: currency
+        tests:
+          - accepted_values:
+              values: ['USD']
+
+  - name: braintree_refunds
+    columns:
+      - name: braintree_refund_id
+        tests:
+          - not_null
+          - unique
+      - name: created_at
+        description: date of transaction
+      - name: updated_at
+        description: updated at
+      - name: refunded_charge_id
+        description: the refund charge id
+      - name: category
+        description: refund or the successful transaction
+        tests:
+          - accepted_values:
+              values: ['refund']
+      - name: payment_provider
+        description: Braintree is the payment provider
+        tests:
+          - accepted_values:
+              values: ['Braintree']
+      - name: identifier
+        description: Braintree transaction id
+      - name: amount
+        description: amount of transaction
+        tests:
+          - not_null
+      - name: currency
+        tests:
+          - accepted_values:
+              values: ['USD']

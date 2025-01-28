@@ -1,0 +1,140 @@
+version: 2
+
+sources:
+  - name: google_play
+    schema: core
+    tables:
+      - name: google_play_earnings
+      - name: google_play_sales
+  - name: appstore
+    schema: core
+    tables:
+      - name: appstore_finance
+      - name: appstore_sales
+  - name: receipts_table
+    schema: core
+    tables:
+      - name: iap_receipts
+        identifier: receipts
+  - name: iap
+    schema: public
+    tables:
+      - name: iap_sku_feature_mapping
+
+
+models: 
+  - name: iap_google_play
+    description: Google Play IAP transactions on the user level
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: source('google_play', 'google_play_sales')
+    columns:
+      - name: created_at
+        description: timestamp of the order
+      - name: client_type
+        description: client type
+        tests:
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID']
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: sku_id
+        description: sku_id of the item being purchased
+        tests:
+          - not_null
+      - name: order_id
+        description: Google Play store order ID
+        tests:
+          - not_null
+      - name: financial_status
+        description: status of the transaction
+      - name: device_model
+        description: model of device used in transaction
+      - name: sub_cycle_number
+        description: subscription cycle number
+      - name: product_title
+        description: product title
+      - name: product_type
+        description: subscription or in-app purchase
+      - name: product_category
+        description: category of purchase
+      - name: renewal_period
+        description: renewal frequency of the product
+      - name: sales_currency
+        description: sales currency
+      - name: item_price
+        description: unit price
+      - name: taxes_collected
+        description: tax amount
+      - name: charged_amount
+        description: full charged amount, including tax
+      - name: city
+        description: city
+      - name: state
+        description: state
+      - name: postal_code
+        description: postal code
+      - name: country
+        description: country
+      - name: currency
+        description: currency
+      - name: iap_gross_revenue_usd
+        description: amount of iap revenue paid by customers in USD
+      - name: iap_net_revenue_usd
+        description: amount of iap revenue TN received after Google's cut in USD
+
+  - name: iap_appstore
+    description: Apple App Store IAP transactions on the user level
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - accepted_values:
+              values: ['TN_IOS', 'TN_IOS_FREE']
+      - name: created_at
+        description: created_at from core.receipts
+      - name: app_name
+        description: app name
+      - name: sku_id
+        description: sku_id of the item being purchased
+      - name: transaction_id
+        description: Apple App Store transaction ID
+        tests:
+          - not_null
+          - unique
+      - name: original_transaction_id
+        description: Apple App Store original transaction ID
+      - name: product_title
+        description: product title
+      - name: product_type
+        description: identifiers of subscription or in-app purchase
+      - name: product_category
+        description: category of purchase
+      - name: renewal_period
+        description: renewal frequency of the product
+      - name: iap_gross_revenue_usd
+        description: amount of iap revenue paid by customers in USD
+      - name: iap_net_revenue_usd
+        description: amount of iap revenue TN received after Apple's cut in USD
+
+  - name: iap_user_daily_subscription
+    description: Daily in-app subscription plan for users
+    columns:
+      - name: date_utc
+        description: date in UTC
+        tests:
+          - not_null
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: sku_id
+        description: sku_id of the item being subscribed
+      - name: feature
+        description: feature of the plan being subscribed

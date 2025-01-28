@@ -1,0 +1,284 @@
+version: 2
+
+
+sources:
+  - name: billing_service
+    tables:
+      - name: customers
+      - name: invoice_items
+      - name: invoices
+      - name: payment_options
+      - name: payment_providers
+      - name: receipt_item_properties
+      - name: receipt_items
+      - name: receipts
+      - name: user_orders
+
+models:
+  - name: billing_service_receipt_items
+    description: Receipt Items from Billing Service. Represents all transactions with our payment providers
+    columns:
+      - name: receipt_item_id
+        description: receipt item id
+        tests:
+          - not_null
+          - unique
+      - name: receipt_id
+        description: receipt id
+      - name: invoice_id
+        description: invoice id
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: created_at
+        description: receipt created at
+      - name: updated_at
+        description: receipt updated at
+      - name: invoice_state
+        description: invoice is open or closed
+      - name: receipt_category
+        description: Category of this charge
+        tests:
+          - accepted_values:
+              values: ['preauth', 'capture', 'refund', 'void']
+              severity: warn
+      - name: payment_provider
+        description: provider such as Stripe or Braintree
+      - name: identifier
+        description: receipt identified
+      - name: payment_method
+        description: Payment Method
+        tests:
+          - accepted_values:
+              values: ['balance', 'credit', 'debit', 'financing']
+              severity: warn
+      - name: receipt_item_amount
+        description: receipt amount in USD
+        tests:
+          - not_null
+
+  - name: billing_service_invoice_items
+    description: Items billed for in each invoice issued to our customers.
+    columns:
+      - name: invoice_item_id
+        description: invoice item id
+        tests:
+          - not_null
+          - unique
+      - name: created_at
+        description: when the invoice was created
+      - name: updated_at
+        description: when invoice was updated
+      - name: item_name
+        description: the name of the item
+      - name: item_description
+        description: description of the item
+      - name: item_category
+        description: category of the item
+        tests:
+          - accepted_values:
+              values: ['subscription', 'credit', 'device_and_plan', 'other']
+              severity: warn
+      - name: invoice_item_amount
+        description: price of the item
+        tests:
+          - not_null
+      - name: invoice_id
+        description: invoice id
+        tests:
+          - not_null
+      - name: invoice_state
+        description: is invoice open - needs to be paid (1) or closed - has been paid (2)
+        tests:
+          - accepted_values:
+              values: ['open', 'closed']
+              severity: warn
+
+  - name: billing_service_transactions
+    description: Both sides of the transaction (receipts and invoices) represented in the same view, only successfully captured charges are included
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - invoice_item_id
+            - receipt_item_id
+    columns:
+      - name: transaction_id
+        description: unique combination of invoice_item_id and receipt_item_id
+        tests:
+          - unique
+      - name: receipt_item_id
+        description: receipt item id
+        tests:
+          - not_null
+          - unique
+      - name: invoice_item_created_at
+        description: when the invoice item was created
+      - name: invoice_item_updated_at
+        description: when the invoice item was updated
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: invoice_id
+        description: invoice id
+      - name: invoice_item_id
+        description: invoice item id
+      - name: item_name
+        description: invoice item name
+      - name: item_category
+        description: invoice item category
+        tests:
+          - accepted_values:
+              values: ['subscription', 'credit', 'device_and_plan', 'other']
+              severity: warn
+      - name: item_description
+        description: invoice item description
+      - name: invoice_item_amount
+        description: invoice item price amount
+        tests:
+          - not_null
+      - name: receipt_item_created_at
+        description: when the receipt item was created
+      - name: receipt_item_updated_at
+        description: when the receipt item was updated
+      - name: receipt_id
+        description: receipt id
+      - name: receipt_item_id
+        description: receipt item id
+      - name: payment_method
+        description: payment method
+        tests:
+          - accepted_values:
+              values: ['balance', 'credit', 'debit', 'financing']
+              severity: warn
+      - name: payment_provider
+        description: provider such as Stripe or Braintree
+      - name: receipt_item_amount
+        description: how much did this receipt item cover
+        tests:
+          - not_null
+
+  - name: billing_service_charges
+    description: Successful charges (receipts) handled by Billing Service, Stripe and Braintree. Examples include device/SIM purchases and also plan subscription/renewals.
+    columns:
+      - name: charge_id
+        description: A unique ID representing a charge
+        tests:
+          - not_null
+          - unique
+      - name: receipt_id
+        description: the receipt to which this charge belongs
+      - name: invoice_id
+        description: The invoice that this charge belongs to
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: created_at
+        description: when the charge was created
+      - name: updated_at
+        description: when the charge was updated
+      - name: receipt_category
+        description: Category of this charge
+        tests:
+          - accepted_values:
+              values: ['capture']
+      - name: payment_provider
+        description: Payment Provider
+      - name: identifier
+        description: The provider-generated identifier for the charge
+      - name: payment_method
+        description: Payment Method
+      - name: charge_amount
+        description: Amount in USD
+        tests:
+          - not_null
+
+  - name: billing_service_purchases
+    description: Successful purchases (invoices) handled by Billing Service, Stripe and Braintree. Examples include device/SIM purchases and also plan subscription/renewals.
+    columns:
+      - name: purchase_id
+        description: A unique ID representing a purchase
+        tests:
+          - not_null
+          - unique
+      - name: invoice_id
+        description: The invoice that this purchase belongs to
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: created_at
+        description: when the purchase was created
+      - name: updated_at
+        description: when the purchase was updated
+      - name: item_name
+        description: name of the purchased item
+      - name: item_category
+        description: category of the purchase
+        tests:
+          - accepted_values:
+              values: ['subscription', 'sim', 'device', 'gift card', 'credit', 'device_and_plan', 'other']
+              severity: warn
+      - name: purchase_amount
+        description: Invoiced amount for the item in USD
+        tests:
+          - not_null
+      - name: paid_amount
+        description: Amount actually paid (net of refunds) for the item in USD. If zero, it means that the purchase as been fully refunded.
+        tests:
+          - not_null
+
+  - name: billing_service_refunds
+    description: Successful refunds (will be subtracted from charges or from purchases to arrive at the net revenue) handled by Billing Service, Stripe and Braintree.
+    columns:
+      - name: refund_id
+        description: A unique ID representing a refund
+        tests:
+          - not_null
+          - unique
+      - name: receipt_id
+        description: the receipt to which this refund belongs
+      - name: invoice_id
+        description: The invoice that this refund belongs to
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: created_at
+        description: when the refund was created
+      - name: updated_at
+        description: when the refund was updated
+      - name: refunded_charge_id
+        description: the charge which the refund is related to
+      - name: receipt_category
+        description: Category of this refund
+        tests:
+          - accepted_values:
+              values: ['refund']
+      - name: payment_provider
+        description: Payment Provider
+      - name: identifier
+        description: The provider-generated identifier for the refund
+      - name: payment_method
+        description: Payment Method
+      - name: refund_amount
+        description: Amount in USD
+        tests:
+          - not_null
+
+  - name: billing_service_invoice_payments
+    description: Total charged amounts and refund amounts for each invoice. Useful for determining if an invoice has been paid / refunded
+    columns:
+      - name: invoice_id
+        description: Invoice ID
+        tests:
+          - not_null
+          - unique
+      - name: charged_amount
+        description: Total amount charged. This can be greater than the original invoice amount because of retries
+      - name: refunded_amount
+        description: Total amount refunded. This can be greater than the original invoice amount because of retries
+      - name: paid_amount
+        description: Total amount paid for this invoice (charged minus refunded)

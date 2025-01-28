@@ -1,0 +1,550 @@
+version: 2
+
+sources:
+  - name: party_planner_realtime
+    tables:
+      - name: ad_show_effective
+        identifier: adshoweffective
+      - name: ad_click
+        identifier: adclick
+      - name: app_lifecycle_changed
+        identifier: applifecyclechanged
+      - name: call_completed
+        identifier: callcompleted
+      - name: callgenericevent
+        identifier: callgenericevent
+      - name: call_ratings
+        identifier: callrating
+      - name: click
+        identifier: click
+      - name: impression
+        identifier: impression
+      - name: login
+        identifier: login
+      - name: message_delivered
+        identifier: messagedelivered
+      - name: nps_reported
+        identifier: npsreported
+      - name: permission
+        identifier: permission
+      - name: property_map
+        identifier: propertymap
+      - name: register_phone_number
+        identifier: registerphonenumber
+      - name: registrations
+        identifier: registration
+      - name: user_updates
+        identifier: userinformationupdate
+      - name: video_call_initiate
+        identifier: videocallinitiate
+      - name: view_displayed
+        identifier: viewdisplayed
+
+models:
+  - name: end_call_metrics
+    description: end call details from callgenericevent
+    columns:
+      - name: DATE_UTC
+        description: date_utc
+      - name: INSTANCE_ID
+        description: instance_id
+      - name: CREATED_AT
+        description: created_at
+      - name: USER_ID_HEX
+        description: user_id_hex
+      - name: USER_ID
+        description: user_id
+      - name: LEG_A_CALL_ID
+        description: leg_a_call_id
+      - name: USERNAME
+        description: username
+      - name: CLIENT_PORT
+        description: client_port
+      - name: LANGUAGE_CODE
+        description: language_code
+      - name: COUNTRY_CODE
+        description: country_code
+      - name: CHECKOUT_WORKFLOW_DATA
+        description: checkout_workflow_data
+      - name: CLIENT_CALLING_SDK_VERSION
+        description: client_calling_sdk_version
+      - name: CLIENT_IP_ADDRESS
+        description: client_ip_address
+      - name: CLIENT_PLATFORM
+        description: client_platform
+      - name: DATE_OF_BIRTH
+        description: date_of_birth
+      - name: LAST_NAME
+        description: last_name
+      - name: FIRST_NAME
+        description: first_name
+      - name: EMAIL_STATUS
+        description: email_status
+      - name: EMAIL
+        description: email
+      - name: CLIENT_VERSION
+        description: client_version
+      - name: TZ_CODE
+        description: tz_code
+      - name: BRAND
+        description: brand
+      - name: USER_AGENT
+        description: user_agent
+      - name: AUDIO_CODEC_ALL_CALLS
+        description: end_call_metrics's audio_codec_all_calls
+      - name: AVERAGE_AUDIO_ENERGY_RECEIVED
+        description: end_call_metrics's average_audio_energy_received
+      - name: AVERAGE_AUDIO_ENERGY_SENT
+        description: end_call_metrics's average_audio_energy_sent
+      - name: AVERAGE_JITTER_BUFFER_DELAY_MS
+        description: end_call_metrics's average_jitter_buffer_delay_ms
+      - name: AVERAGE_LATENCY_MS
+        description: end_call_metrics's average_latency_ms
+      - name: AVERAGE_MOS
+        description: end_call_metrics's average_mos
+      - name: FEC_PACKETS_DISCARDED
+        description: end_call_metrics's fec_packets_discarded
+      - name: FEC_PACKETS_RECEIVED
+        description: end_call_metrics's fec_packets_received
+      - name: ICE_HOSTS
+        description: end_call_metrics's ice_hosts
+      - name: LATENCY_JUMP_COUNT
+        description: end_call_metrics's latency_jump_count
+      - name: MAX_AUDIO_JITTER_BUFFER_PACKETS
+        description: end_call_metrics's max_audio_jitter_buffer_packets
+      - name: MAX_LATENCY_MS
+        description: end_call_metrics's max_latency_ms
+      - name: NETWORK_TESTER_RECONNECT_MAX_WAIT_TIME
+        description: end_call_metrics's network_tester_reconnect_max_wait_time
+      - name: NO_INBOUND_AUDIO_TIMEOUT
+        description: end_call_metrics's no_inbound_audio_timeout
+      - name: NO_OUTBOUND_AUDIO_TIMEOUT
+        description: end_call_metrics's no_outbound_audio_timeout
+      - name: PACKET_LOSS_PERCENTAGE
+        description: end_call_metrics's packet_loss_percentage
+      - name: SIP_CALL_ID
+        description: end_call_metrics's sip_call_id
+      - name: TOTAL_AUDIO_ENERGY_RECEIVED
+        description: end_call_metrics's total_audio_energy_received
+      - name: TOTAL_AUDIO_ENERGY_SENT
+        description: end_call_metrics's total_audio_energy_sent
+      - name: TOTAL_SAMPLES_DURATION_RECEIVED
+        description: end_call_metrics's total_samples_duration_received
+      - name: TOTAL_SAMPLES_DURATION_SENT
+        description: end_call_metrics's total_samples_duration_sent
+      - name: TURN_URL
+        description: end_call_metrics's turn_url
+      - name: INSERTED_TIMESTAMP
+        description: inserted timestamp
+
+  - name: incoming_call_push
+    description: incoming push calls from callgenericevent
+    columns:
+      - name: DATE_UTC
+        description: date_utc
+      - name: INSTANCE_ID
+        description: instance_id
+      - name: CREATED_AT
+        description: created_at
+      - name: USER_ID_HEX
+        description: user_id_hex
+      - name: USER_ID
+        description: user_id
+      - name: LEG_A_CALL_ID
+        description: leg_a_call_id
+      - name: USERNAME
+        description: username
+      - name: CLIENT_PORT
+        description: client_port
+      - name: LANGUAGE_CODE
+        description: language_code
+      - name: COUNTRY_CODE
+        description: country_code
+      - name: CHECKOUT_WORKFLOW_DATA
+        description: checkout_workflow_data
+      - name: CLIENT_CALLING_SDK_VERSION
+        description: client_calling_sdk_version
+      - name: CLIENT_IP_ADDRESS
+        description: client_ip_address
+      - name: CLIENT_PLATFORM
+        description: client_platform
+      - name: DATE_OF_BIRTH
+        description: date_of_birth
+      - name: LAST_NAME
+        description: last_name
+      - name: FIRST_NAME
+        description: first_name
+      - name: EMAIL_STATUS
+        description: email_status
+      - name: EMAIL
+        description: email
+      - name: CLIENT_VERSION
+        description: client_version
+      - name: TZ_CODE
+        description: tz_code
+      - name: BRAND
+        description: brand
+      - name: USER_AGENT
+        description: user_agent
+      - name: SENT_TIME
+        description: sent_time
+      - name: RECEIVED_TIME
+        description: received_time
+      - name: ATTEMPT
+        description: attempt
+      - name: CALLER
+        description: caller
+      - name: UUID
+        description: UUID
+      - name: MESSAGE
+        description: message
+      - name: INSERTED_TIMESTAMP
+        description: inserted timestamp
+
+  - name: incoming_call_v2_metrics
+    description:  Creating new metrics for inbound calls with the new call flow. This incoming_call_v2_metrics table will be a superset of CALL_INCOMING and LEGACY_CALL_INCOMING
+    columns:
+      - name: DATE_UTC
+        description: date_utc
+      - name: INSTANCE_ID
+        description: instance id
+      - name: CREATED_AT
+        description: created at
+      - name: EVENT_ID
+        description: EVENT ID
+      - name: USER_ID_HEX
+        description: user_id_hex
+      - name: USER_ID
+        description: user_id
+      - name: LEG_A_CALL_ID
+        description: leg_a_call_id
+      - name: USERNAME
+        description: username
+      - name: CLIENT_PORT
+        description: client_port
+      - name: LANGUAGE_CODE
+        description: language code
+      - name: COUNTRY_CODE
+        description: country code
+      - name: CHECKOUT_WORKFLOW_DATA
+        description: checkout_workflow_data
+      - name: CLIENT_CALLING_SDK_VERSION
+        description: client_calling_sdk_version
+      - name: CLIENT_IP_ADDRESS
+        description: client_ip_address
+      - name: CLIENT_PLATFORM
+        description: client_platform
+      - name: DATE_OF_BIRTH
+        description: date_of_birth
+      - name: LAST_NAME
+        description: last name
+      - name: FIRST_NAME
+        description: first name
+      - name: EMAIL_STATUS
+        description: email_status
+      - name: EMAIL
+        description: email
+      - name: CLIENT_VERSION
+        description: client_version
+      - name: TZ_CODE
+        description: tz_code
+      - name: BRAND
+        description: brand
+      - name: USER_AGENT
+        description: user_agent
+      - name: APPLICATION_VERSION
+        description: APPLICATION_VERSION
+      - name: CALL_ACCEPT_TIME
+        description: CALL_ACCEPT_TIME
+      - name: CALL_DISPOSITION
+        description: CALL_DISPOSITION
+      - name: CALL_ESTABLISH_TIME
+        description: CALL_ESTABLISH_TIME
+      - name: CALL_ID
+        description: CALL_ID
+      - name: CALL_ID_OR_GLOBAL_CALL_ID
+        description: CALL_ID_OR_GLOBAL_CALL_ID
+      - name: CALL_TYPE
+        description: CALL_TYPE
+      - name: CLIENT_TYPE
+        description: CLIENT_TYPE
+      - name: CREATE_TIME
+        description: CREATE_TIME
+      - name: DEVICE_MODEL
+        description: DEVICE_MODEL
+      - name: GLOBAL_CALL_ID
+        description: GLOBAL_CALL_ID
+      - name: INTERCEPT_CALL_ESTABLISH_TIME
+        description: INTERCEPT_CALL_ESTABLISH_TIME
+      - name: INTERCEPT_CALL_START_TIME
+        description: INTERCEPT_CALL_START_TIME
+      - name: INTERCEPT_CALL_TRYING_TIME
+        description: INTERCEPT_CALL_TRYING_TIME
+      - name: INTERCEPT_SDP_READY_TIME
+        description: INTERCEPT_SDP_READY_TIME
+      - name: INTERCEPT_UUID
+        description: INTERCEPT_UUID
+      - name: NETWORK_TESTER_RESULT
+        description: NETWORK_TESTER_RESULT
+      - name: OPERATING_SYSTEM
+        description: OPERATING_SYSTEM
+      - name: OS_VERSION
+        description: OS_VERSION
+      - name: PLATFORM_HOST
+        description: PLATFORM_HOST
+      - name: PUSH_RECEIVE_TIME
+        description: PUSH_RECEIVE_TIME
+      - name: SIP_CLIENT
+        description: SIP_CLIENT
+      - name: inserted_at
+        description: inserted timestamp
+      - name: inserted_by
+        description: inserted by which process(dbt, manual backfill, airflow..)
+
+  - name: legacy_call_end
+    description: Call start and end details by user
+    columns:
+      - name: APPLICATION_NAME
+        description: APPLICATION_NAME
+      - name: APPLICATION_VERSION
+        description: APPLICATION_VERSION
+      - name: CALL_DIRECTION
+        description: CALL_DIRECTION
+      - name: CALL_DISPOSITION
+        description: CALL_DISPOSITION
+      - name: CALL_DURATION
+        description: CALL_DURATION
+      - name: CALL_ENDED_AT
+        description: CALL_ENDED_AT
+      - name: CALL_ID
+        description: CALL_ID
+      - name: CALL_STARTED_AT
+        description: CALL_STARTED_AT
+      - name: CLIENT_CONFIG_GROUP
+        description: CLIENT_CONFIG_GROUP
+      - name: CLIENT_TYPE
+        description: CLIENT_TYPE
+      - name: COMPUTED_MOS
+        description: COMPUTED_MOS
+      - name: CREATED_AT
+        description: CREATED_AT
+      - name: DATE_UTC
+        description: DATE_UTC
+      - name: END_CALL_VOLUME
+        description: END_CALL_VOLUME
+      - name: ICE_SERVER_TYPE
+        description: ICE_SERVER_TYPE
+      - name: INITIAL_CALL_VOLUME
+        description: INITIAL_CALL_VOLUME
+      - name: INSTANCE_ID
+        description: INSTANCE_ID
+      - name: MAX_CALL_VOLUME
+        description: MAX_CALL_VOLUME
+      - name: MAX_JITTER
+        description: MAX_JITTER
+      - name: MIN_JITTER
+        description: MIN_JITTER
+      - name: PACKETS_RECEIVED
+        description: PACKETS_RECEIVED
+      - name: PACKETS_SENT
+        description: PACKETS_SENT
+      - name: PACKET_LOSS
+        description: PACKET_LOSS
+      - name: PLATFORM
+        description: PLATFORM
+      - name: QOS_TEST_CHOSEN_NETWORK
+        description: QOS_TEST_CHOSEN_NETWORK
+      - name: QOS_TEST_NETWORK
+        description: QOS_TEST_NETWORK
+      - name: QOS_TEST_RESULT
+        description: QOS_TEST_RESULT
+      - name: REGISTRAR_DOMAIN
+        description: REGISTRAR_DOMAIN
+      - name: RTP_SETUP_TIME
+        description: RTP_SETUP_TIME
+      - name: SIP_CLIENT
+        description: SIP_CLIENT
+      - name: USED_TURN
+        description: USED_TURN
+      - name: USERNAME
+        description: USERNAME
+      - name: USER_ID_HEX
+        description: USER_ID_HEX
+      - name: FS_CONFIG_GROUP
+        description: FS_CONFIG_GROUP
+
+  - name: legacy_call_incoming
+    description: incoming call details
+    columns:
+      - name: DATE_UTC
+        description: DATE_UTC
+      - name: INSTANCE_ID
+        description: INSTANCE_ID
+      - name: CREATED_AT
+        description: CREATED_AT
+      - name: USER_ID_HEX
+        description: USER_ID_HEX
+      - name: USER_ID
+        description: USER_ID
+      - name: LEG_A_CALL_ID
+        description: LEG_A_CALL_ID
+      - name: USERNAME
+        description: USERNAME
+      - name: CLIENT_TYPE
+        description: CLIENT_TYPE
+      - name: SIP_CLIENT
+        description: SIP_CLIENT
+      - name: OS
+        description: OS
+      - name: OS_VERSION
+        description: OS_VERSION
+      - name: APPLICATION_VERSION
+        description: APPLICATION_VERSION
+      - name: DEVICE_MODEL
+        description: DEVICE_MODEL
+      - name: CALL_TYPE
+        description: CALL_TYPE
+      - name: CALL_ID_OR_GLOBAL_ID
+        description: CALL_ID_OR_GLOBAL_ID
+      - name: GLOBAL_CALL_ID
+        description: GLOBAL_CALL_ID
+      - name: CALL_ID
+        description: CALL_ID
+      - name: CREATED_AT
+        description: CREATED_AT
+      - name: INVITE_RECEIVED_AT
+        description: INVITE_RECEIVED_AT
+      - name: REGISTRATION_STARTED_AT
+        description: REGISTRATION_STARTED_AT
+      - name: REGISTRATION_SUCCEDDED_AT
+        description: REGISTRATION_SUCCEEDED_AT
+      - name: CREATED_AT_WALL_TIME
+        description: CREATED_AT_WALL_TIME
+      - name: PUSH_RECEIVED_AT
+        description: PUSH_RECEIVED_AT
+      - name: FS_CONFIG_GROUP
+        description: FS_CONFIG_GROUP
+      - name: NETWORK_TESTER_RESULT
+        description: NETWORK_TESTER_RESULT
+      
+  - name: legacy_call_outgoing
+    description: outgoing call details
+    columns:
+      - name: DATE_UTC
+        description: DATE_UTC
+      - name: INSTANCE_ID
+        description: INSTANCE_ID
+      - name: CREATED_AT
+        description: CREATED_AT
+      - name: USER_ID_HEX
+        description: USER_ID_HEX
+      - name: USER_ID
+        description: USER_ID
+      - name: LEG_A_CALL_ID
+        description: LEG_A_CALL_ID
+      - name: USERNAME
+        description: USERNAME
+      - name: CLIENT_TYPE
+        description: CLIENT_TYPE
+      - name: OS_VERSION
+        description: OS_VERSION
+      - name: DEVICE_MODEL
+        description: DEVICE_MODEL
+      - name: OPERATING_SYSTEM
+        description: OPERATING_SYSTEM
+      - name: APPLICATION_VERSION
+        description: APPLICATION_VERSION
+      - name: SIP_CLIENT
+        description: SIP_CLIENT
+      - name: CALL_TYPE
+        description: CALL_TYPE
+      - name: CALL_ID
+        description: CALL_ID
+      - name: CALL_TRYING_AT
+        description: CALL_TRYING_AT
+      - name: CALL_INITIATED_AT
+        description: CALL_INITIATED_AT
+      - name: CALL_PLACED_AT
+        description: CALL_PLACED_AT
+      - name: CALL_STARTED_AT
+        description: CALL_STARTED_AT
+      - name: NETWORK_TESTER_RESULT
+        description: NETWORK_TESTER_RESULT
+      - name: CREATED_AT_WALL_TIME
+        description: CREATED_AT_WALL_TIME
+      - name: FS_CONFIG_GROUP
+        description: FS_CONFIG_GROUP
+
+  - name: missed_call_push
+    description: missed call details from callgenericevent
+    columns:
+      - name: DATE_UTC
+        description: date_utc
+      - name: INSTANCE_ID
+        description: instance_id
+      - name: CREATED_AT
+        description: created_at
+      - name: USER_ID_HEX
+        description: user_id_hex
+      - name: USER_ID
+        description: user_id
+      - name: USERNAME
+        description: username
+      - name: CLIENT_PORT
+        description: client_port
+      - name: LANGUAGE_CODE
+        description: language_code
+      - name: COUNTRY_CODE
+        description: country_code
+      - name: CHECKOUT_WORKFLOW_DATA
+        description: checkout_workflow_data
+      - name: CLIENT_CALLING_SDK_VERSION
+        description: client_calling_sdk_version
+      - name: CLIENT_IP_ADDRESS
+        description: client_ip_address
+      - name: CLIENT_PLATFORM
+        description: client_platform
+      - name: DATE_OF_BIRTH
+        description: date_of_birth
+      - name: LAST_NAME
+        description: last_name
+      - name: FIRST_NAME
+        description: first_name
+      - name: EMAIL_STATUS
+        description: email_status
+      - name: EMAIL
+        description: email
+      - name: CLIENT_VERSION
+        description: client_version
+      - name: TZ_CODE
+        description: tz_code
+      - name: BRAND
+        description: brand
+      - name: USER_AGENT
+        description: missed_call_push's user_agent
+      - name: CONTACT
+        description: missed_call_push's contact
+      - name: CONTACT_TYPE
+        description: missed_call_push's contact_type
+      - name: CONTACT_VALUE
+        description: missed_call_push's contact_value
+      - name: DELAY
+        description: missed_call_push's delay
+      - name: ID
+        description: missed_call_push's id
+      - name: LEG_A_CALL_ID
+        description: missed_call_push's leg_a_call_id
+      - name: MESSAGE
+        description: missed_call_push's message
+      - name: OUTGOING
+        description: missed_call_push's outgoing
+      - name: RECEIVED_TIME
+        description: missed_call_push's received_time
+      - name: SENT_TIME
+        description: missed_call_push's sent_time
+      - name: TYPE
+        description: missed_call_push's type
+      - name: UUID
+        description: missed_call_push's uuid
+      - name: INSERTED_TIMESTAMP
+        description: inserted timestamp

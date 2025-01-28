@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: user_location_kpis
+    description: Data to be shared with Haus regarding certain KPIs
+    columns:
+      - name: date_utc
+        description: date of install/registration
+      - name: client_type
+        description: client type of the install/registration
+      - name: country_code
+        description: country code (USA/CAN)
+      - name: region_type
+        description: format of the region value being stored
+      - name: region
+        description: region value
+      - name: kpi_name
+        description: type of kpi value being stored
+      - name: kpi_value
+        description: kpi value

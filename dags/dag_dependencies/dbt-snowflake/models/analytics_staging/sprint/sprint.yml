@@ -1,0 +1,41 @@
+version: 2
+
+
+sources:
+  - name: sprint_ams
+    schema: core
+    tables:
+      - name: sprint_data_usage
+      - name: sprint_cdma_data_usage
+      - name: sprint_lte_data_usage
+
+
+models:
+  - name: sprint_mdn_daily_data_usage
+    description: Daily data usage by MDN (for cost calculation purpose) for subscribers on Sprint
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - mdn
+            - date_utc
+    columns:
+      - name: mdn
+        description: MDN
+        tests:
+          - not_null
+      - name: date_utc
+        description: date
+        tests:
+          - not_null
+      - name: lte_incoming_bytes
+        description: incoming LTE usage in bytes
+      - name: lte_outgoing_bytes
+        description: outgoing LTE usage in bytes
+      - name: ipdr_incoming_bytes
+        description: incoming 3G usage in bytes
+      - name: ipdr_outgoing_bytes
+        description: outgoing 3G usage in bytes
+      - name: total_bytes
+        description: total usage in bytes
+        tests:
+          - not_null

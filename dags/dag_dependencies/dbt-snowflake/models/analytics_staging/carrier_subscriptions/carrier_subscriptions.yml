@@ -1,0 +1,64 @@
+version: 2
+
+sources:
+  - name: tmobile
+    schema: core
+    tables:
+      - name: carrier_subscriptions_history
+      - name: carrier_subscription_devices
+
+
+models:
+  - name: carrier_subscriptions_iccid_rateplan_history
+    description: logs carrier subscription history (from/to) for each iccid (SIM card)
+    columns:
+      - name: surrogate_key
+        description: unique key for this table, a hash of iccid and from_ts
+        tests:
+          - not_null
+      - name: iccid
+        description: Integrated Circuit Card ID, which identies a SIM card
+        tests:
+          - not_null
+      - name: mdn
+        description: a ten-digit number that generally follows the North American Numbering Plan
+        tests:
+          - not_null
+      - name: imsi
+        description: International Mobile Subscriber Identity
+      - name: carrier
+        description: carrier or vendor for carrier subscriptions
+        tests:
+          - not_null
+      - name: subscription_rate_plan_code
+        description: code for carrier rate plan (Carrier Subscription Service doesn't use integer IDs like inventory versions)
+      - name: activation_status
+        description: whether the carrier subscription is active, activating or expired
+        tests:
+          - accepted_values:
+              values: ['ACTIVATED', 'ACTIVATING', 'EXPIRED']
+      - name: from_ts
+        description: when a given iccid started with its given state in mdn, imsi, carrier, subscription & activation status
+        tests:
+          - not_null
+      - name: to_ts
+        description: when a given iccid ended its given state in mdn, imsi, carrier, subscription & activation status
+
+  - name: carrier_subscriptions_mdn_daily_rateplan
+    description: logs active carrier subscription for each mdn on a daily basis
+    columns:
+      - name: mdn
+        description: a ten-digit number that generally follows the North American Numbering Plan
+        tests:
+          - not_null
+      - name: date_utc
+      - name: imsi
+        description: International Mobile Subscriber Identity
+      - name: iccid
+        description: Integrated Circuit Card ID, which identies a SIM card
+      - name: carrier
+        description: carrier or vendor for carrier subscriptions
+        tests:
+          - not_null
+      - name: subscription_rate_plan_code
+        description: whether the carrier subscription is active, activating or expired

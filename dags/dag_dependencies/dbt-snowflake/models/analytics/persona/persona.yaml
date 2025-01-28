@@ -1,0 +1,23 @@
+version: 2
+
+sources:
+  - name: zip_code_meta
+    database: us_zip_code_metadata__populations_geo_centroid_latlng_city_names_state_dma_demographics
+    schema: zip_demographics 
+    tables:
+      - name: zip_code_metadata
+
+models:
+  - name: persona_census
+  - name: persona_device_count
+  - name: persona_device_price
+  - name: persona_email_domain  
+  - name: persona_features
+  - name: persona_general_location
+  - name: persona_message_p1
+  - name: persona_message_p2
+  - name: persona_qsr_store_cnt
+  - name: persona_self_reported
+  - name: persona_trust_score
+  - name: persona_universe
+  - name: persona_user_activity_last_90_days

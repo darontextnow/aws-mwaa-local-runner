@@ -1,0 +1,9 @@
+rfm_priority,rfm_segment
+1,loyal
+2,promising
+3,at_risk
+4,leaving
+5,infrequent
+6,new_users
+7,bad_sets
+8,other_users

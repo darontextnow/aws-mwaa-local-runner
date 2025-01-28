@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: trust_safety_user_request_logs
+    description: First 30 requests after each user's successful registration
+    columns:
+      - name: request_ts
+        description: timestamp of request
+      - name: username
+        description: username
+      - name: client_type
+        description: originating client_type of request
+        tests:
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_WEB']
+      - name: route_name
+        description: route name
+      - name: http_response_status
+        description: status code of the response to the client
+      - name: match_sequence_number
+        description: the sequence number of the request (the first successful registation has sequence number = 1)
+      - name: cohort_utc
+        description: date of the username's first successful registation request
+
+  - name: trust_safety_wireless_disable_attempts
+    description: disable attempts of wireless users
+    columns:
+      - name: date_utc
+        description: date of disable attempt
+      - name: request_ts
+        description: timestamp of disable attempt
+      - name: user_id_hex
+        description: user_id_hex
+      - name: disable_reason
+        description: reason of disable
+      - name: disable_log
+        description: log of disable attempt

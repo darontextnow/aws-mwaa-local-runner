@@ -1,0 +1,28 @@
+version: 2
+
+models:
+    - name: user_features_summary
+      description: Contains feature values aggregated over a 4-week period ending on each report_date. Each report_date contains only usernames seen in that corresponding 4-week period.
+      columns:
+        - name: report_date
+          description: feature values are calculated as of this date
+        - name: username
+        - name: COUNT(SMS_MESSAGES)_28d
+        - name: COUNT(TOTAL_OUTGOING_CALLS)_28d
+        - name: COUNT(NPS_MAX_SCORE)_28d
+        - name: SUM(UI_MENU_OPEN)_28d
+        - name: DAYS_FROM_LAST(SUB_TYPE)
+        - name: USER_SET_LIFETIME_DAYS
+
+    - name: user_set_features_summary
+      description: Contains feature values aggregated over a 4-week period ending on each report_date. Each report_date contains only user sets seen in that corresponding 4-week period.
+      columns:
+        - name: report_date
+          description: feature values are calculated as of this date
+        - name: user_set_id
+        - name: COUNT(SMS_MESSAGES)_28d
+        - name: COUNT(TOTAL_OUTGOING_CALLS)_28d
+        - name: COUNT(NPS_MAX_SCORE)_28d
+        - name: SUM(UI_MENU_OPEN)_28d
+        - name: DAYS_FROM_LAST(SUB_TYPE)
+        - name: USER_SET_LIFETIME_DAYS

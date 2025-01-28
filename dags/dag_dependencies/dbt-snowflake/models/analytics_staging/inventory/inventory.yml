@@ -1,0 +1,159 @@
+version: 2
+
+
+sources:
+  - name: inventory
+    tables:
+      - name: item_versions
+      - name: items_data
+      - name: orders_data
+      - name: order_products
+      - name: order_items
+      - name: items
+
+models:
+  - name: inventory_items
+    description: Data on inventory items (devices and SIMs)
+    columns:
+      - name: item_id
+        description: Inventory Item ID
+        tests:
+          - unique
+          - not_null
+      - name: orig_sim_item_id
+        description: Sometimes SIMs are activated as BYOSD thus getting a new Item ID. This is a reference to the orignal item ID
+      - name: esn
+        description: Electronic serial number
+      - name: msl
+        description: Master Subsidy Lock, used for reprogramming a CDMA phone
+      - name: mdn
+        description: The MDN is a ten-digit number that generally follows the North American Numbering Plan
+      - name: msid
+        description: Mobile Station ID
+      - name: device_key
+        description: Device Key
+      - name: iccid
+        description: Integrated Circuit Card ID, which identies a SIM card
+      - name: imsi
+        description: international mobile subscriber identity
+      - name: item_uuid
+        description: An UUID assigned to this inventory item
+      - name: device_config_id
+        description: a device config id (see inventory db for details)
+      - name: subscription_rate_plan_id
+        description: Subscription rate plan
+      - name: product_id
+        description: Product ID of inventory item
+      - name: state
+        description: Current state. Common states include Received, Stocked, Shipped, etc.
+      - name: created_at
+        description: the creation timestamp
+      - name: updated_at
+        description: the timestamp at which the record was last updated
+      - name: item_classification
+        description: Beyond Economical Repair / Slight Wear / Moderate Wear / Like New
+      - name: qc_count
+      - name: suspended
+        description: true if this item is suspended
+      - name: recovery_mode
+      - name: cdma_fallback
+      - name: trued_up
+      - name: throttle_level
+      - name: tethering
+      - name: activation_state
+        description: the activation state
+        tests:
+          - accepted_values:
+              values: ['pending request', 'activated', 'suspended', 'inactive']
+      - name: ip_address
+        description: current IP address of the inventory item
+
+
+  - name: inventory_item_rateplan_history
+    description: a history table for internal rate plan / MDN for each inventory item
+    columns:
+      - name: surrogate_key
+        description: surrogate key for item_id and from_ts
+        tests:
+        - not_null
+        - unique
+      - name: item_id
+        description: Inventory Item ID
+        tests:
+          - not_null
+      - name: item_uuid
+        description: Inventory Item UUID
+      - name: mdn
+        description: MDN for inventory item
+      - name: imsi
+        description: IMSI
+      - name: subscription_rate_plan_id
+        description: active subscription rate plan ID for inventory item
+      - name: from_ts
+        description: the timestamp from which the rate plan was valid
+        tests:
+          - not_null
+      - name: to_ts
+        description: the timestamp until which the rate plan was valid
+
+  - name: inventory_mdn_daily_rateplan
+    description: Internal rate plan for each MDN on each date
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - mdn
+            - date_utc
+    columns:
+      - name: mdn
+        description: MDN
+        tests:
+          - not_null
+      - name: date_utc
+        description: date
+        tests:
+          - not_null
+      - name: imsi
+        description: IMSI
+      - name: item_uuid
+        description: item UUID
+      - name: internal_rate_plan_id
+        description: subscription rate plan ID
+
+  - name: inventory_user_item_history
+    description: A history table for users' subscription devices
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: product_id
+        description: Item's Product ID
+      - name: mdn
+        description: MDN
+      - name: item_uuid
+        description: Item UUID
+      - name: from_ts
+        description: from timestamp
+      - name: to_ts
+        description: to timestamp
+
+  - name: inventory_mdn_daily_username
+    description: A mapping of MDN to username on each date
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - mdn
+            - date_utc
+    columns:
+      - name: mdn
+        description: MDN
+        tests:
+          - not_null
+      - name: date_utc
+        description: date
+      - name: item_uuid
+        description: Item UUID
+      - name: product_id
+        description: Item's Product ID
+      - name: username
+        description: username

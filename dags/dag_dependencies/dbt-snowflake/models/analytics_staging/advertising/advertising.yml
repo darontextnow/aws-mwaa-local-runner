@@ -1,0 +1,100 @@
+version: 2
+
+sources:
+  - name: firehose
+    schema: core
+    tables:
+      - name: adtracker
+
+models:
+  - name: advertising_line_item_ad_unit_user_daily_impressions
+    description: Impressions per user per line_item_id/ad_unit per date
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - client_type
+            - line_item_id
+            - ad_unit
+            - username
+    columns:
+      - name: date_utc
+        description: date of impression
+        tests:
+          - not_null
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - accepted_values:
+              values: ['TN_ANDROID', 'TN_IOS_FREE', 'TN_WEB', '2L_ANDROID', 'UNKNOWN']
+      - name: line_item_id
+        description: line_item_id of the ad
+      - name: ad_unit
+        description: ad unit of the ad
+      - name: impressions
+        description: sum of user impression counts
+
+  - name: advertising_line_item_ad_unit_daily_revenue
+    description: Revenue per ad_unit/line_item_id per date
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - client_type
+            - line_item_id
+            - ad_unit
+    columns:
+      - name: date_utc
+        description: date of revenue
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - accepted_values:
+              values: ['TN_ANDROID', 'TN_IOS_FREE', 'TN_WEB', '2L_ANDROID', 'UNKNOWN']
+      - name: line_item_id
+        description: line item id of the ad
+      - name: ad_unit
+        description: ad unit of the ad
+      - name: revenue
+        description: sum of revenue
+
+  - name: advertising_user_ad_unit_daily_revenue
+    description: Ad revenue by user by date by ad unit
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - username
+            - date_utc
+            - client_type
+            - ad_unit
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: date_utc
+        description: date of impression
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - not_null
+      - name: ad_unit
+        description: ad unit
+        tests:
+          - not_null
+      - name: ad_impressions
+        description: sum of impressions per user per day
+        tests:
+          - not_null
+      - name: ad_revenue
+        description: sum of revenue per person per day
+        tests:
+          - not_null

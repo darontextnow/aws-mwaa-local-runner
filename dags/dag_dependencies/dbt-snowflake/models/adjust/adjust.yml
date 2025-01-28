@@ -1,0 +1,318 @@
+version: 2
+
+sources:
+  - name: adjust
+    tables:
+      - name: kpis
+      - name: installs
+      - name: reattribution
+
+models:
+  - name: installs_with_pi
+    description: P1 Adjust install events (first app open)
+    constraints:
+      - type: primary_key
+        columns: [ adid, app_id ]
+    columns:
+      - name: adjust_id
+        description: Adjust's device identifier
+        tests:
+          - not_null
+      - name: adid
+        description: Adjust id
+        tests:
+          - not_null
+      - name: app_id
+        description: Adjust's app identifier
+      - name: app_version
+      - name: app_name
+        description: application name
+      - name: app_name_dashboard
+      - name: environment
+      - name: created_at
+        description: timestamp of the reattribution event
+      - name: installed_at
+        description: timestamp of the install event
+        tests:
+          - not_null
+      - name: click_time
+        description: timestamp of the attributed click
+      - name: tracker
+        description: Adjust's attribution tracker
+      - name: tracker_name
+      - name: store
+        description: target store where the click happened
+      - name: impression_based
+        description: whether the attribution is based on an impression
+      - name: device_type
+        description: type of device (e.g. phone/tablet)
+      - name: is_organic
+        description: whether the install is organic
+      - name: match_type
+        description: attribution method (e.g. fingerprint/device_tag/google)
+      - name: device_name
+        description: device model number
+      - name: user_agent
+      - name: os_name
+        description: name of the operating system (e.g. ios/android)
+      - name: network_name
+        description: latest Network name associated with the tracker
+      - name: campaign_name
+        description: latest Campaign name associated with the tracker
+      - name: adgroup_name
+        description: latest Adgroup name associated with the tracker
+      - name: creative_name
+        description: latest Creative name associated with the tracker
+      - name: os_version
+        description: version of the operating system
+      - name: sdk_version
+        description: Adjust SDK version
+      - name: idfa
+        description: ID for advertisers (iOS only) (!PI)
+      - name: idfv
+        description: ID for vendors (iOS only) (!PI)
+      - name: android_id
+        description: Android ID (Android only) (!PI)
+      - name: gps_adid
+        description: Google Play Advertiser ID (!PI)
+      - name: gclid
+        description: Google Click Identifier (!PI)
+      - name: win_naid
+        description: Windows Store network adapter ID (!PI)
+      - name: win_adid
+        description: Windows advertising identifier (!PI)
+      - name: ip_address
+        description: client ip address (!PI)
+      - name: language
+        description: two-character language code (e.g. en)
+      - name: country
+        description: Device two-character country code (lower case)
+      - name: fb_campaign_group_name
+      - name: fb_campaign_group_id
+      - name: fb_campaign_name
+      - name: fb_campaign_id
+      - name: fb_adgroup_name
+      - name: fb_adgroup_id
+      - name: tweet_id
+      - name: twitter_line_item_id
+      - name: isp
+        description: Device internet service provider (!PI)
+      - name: tracking_limited
+        description: whether limited ad tracking is turned on
+      - name: deeplink
+        description: deeplink URL appended to click URL
+      - name: timezone
+        description: Device time zone
+      - name: connection_type
+        description: Internet connection Type (e.g. cellular)
+      - name: rejection_reason
+      - name: app_version_temp
+      - name: app_version_short
+      - name: fb_install_referrer_campaign_group_name
+      - name: fb_install_referrer_campaign_group_id
+      - name: fb_install_referrer_campaign_name
+      - name: fb_install_referrer_adgroup_id
+      - name: fb_install_referrer_adgroup_name
+      - name: fb_install_referrer_ad_id
+      - name: fb_install_referrer_account_id
+      - name: fb_install_referrer_publisher_platform
+      - name: inserted_timestamp
+      - name: s3_file_path
+        description: the s3 path of the source file for this record
+
+  - name: reattribution_with_pi
+    description: P1 Adjust reattribution events
+    columns:
+      - name: adid
+        description: Adjust id
+        tests:
+          - not_null
+      - name: app_id
+        description: Adjust's app identifier
+      - name: app_version
+      - name: app_name
+        description: Adjust's app name
+      - name: app_name_dashboard
+      - name: environment
+      - name: created_at
+        description: timestamp of the reattribution event
+      - name: installed_at
+        description: timestamp of the install event
+        tests:
+          - not_null
+      - name: click_time
+        description: timestamp of the attributed click
+      - name: tracker
+        description: Adjust's attribution tracker
+      - name: tracker_name
+      - name: store
+        description: target store where the click happened
+        tests:
+          - accepted_values:
+              values: [ 'itunes', 'google', 'wstore', 'wphone' ]
+      - name: impression_based
+        description: whether the attribution is based on an impression
+      - name: device_type
+        description: type of device (e.g. phone/tablet)
+      - name: is_organic
+        description: whether the install is organic
+      - name: match_type
+        description: attribution method (e.g. fingerprint/device_tag/google)
+      - name: device_name
+        description: device model number
+      - name: user_agent
+      - name: os_name
+        description: name of the operating system (e.g. ios/android)
+      - name: network_name
+        description: latest Network name associated with the tracker
+      - name: campaign_name
+        description: latest Campaign name associated with the tracker
+      - name: adgroup_name
+        description: latest Adgroup name associated with the tracker
+      - name: creative_name
+        description: latest Creative name associated with the tracker
+      - name: os_version
+        description: version of the operating system
+      - name: sdk_version
+        description: Adjust SDK version
+      - name: idfa
+        description: device ID of iOS devices
+      - name: idfv
+        description: vendor ID of iOS devices
+      - name: android_id
+        description: vendor ID of Android devices
+      - name: gps_adid
+        description: Google Play Advertiser ID (!PI)
+      - name: gclid
+        description: Google Click Identifier (!PI)
+      - name: win_naid
+        description: Windows Store network adapter ID (!PI)
+      - name: win_adid
+        description: Windows advertising identifier (!PI)
+      - name: ip_address
+        description: client ip address (!PI)
+      - name: language
+        description: two-character language code (e.g. en)
+      - name: country
+        description: country code (e.g. GB)
+      - name: fb_campaign_group_name
+      - name: fb_campaign_group_id
+      - name: fb_campaign_name
+      - name: fb_campaign_id
+      - name: fb_adgroup_name
+      - name: fb_adgroup_id
+      - name: tweet_id
+      - name: twitter_line_item_id
+      - name: reattribution_attribution_window_hours
+        description: attribution window setting (hours)
+      - name: inactive_user_definition_hours
+        description: inactivity period required for reattribution (hours)
+      - name: region
+        description: region code (e.g. US)
+      - name: country_subdivision
+        description: country_subdivision (e.g. California)
+      - name: city
+        description: city (e.g. Berlin)
+      - name: postal_code
+        description: postal_code (e.g. 12101)
+      - name: deeplink
+        description: deeplink URL appended to click URL
+      - name: timezone
+        description: Device time zone
+      - name: connection_type
+        description: Internet connection Type (e.g. celluar)
+      - name: tracking_limited
+        description: whether limited ad tracking is turned on
+      - name: app_version_temp
+      - name: app_version_short
+      - name: fb_install_referrer_campaign_group_name
+      - name: fb_install_referrer_campaign_group_id
+      - name: fb_install_referrer_campaign_name
+      - name: fb_install_referrer_adgroup_id
+      - name: fb_install_referrer_adgroup_name
+      - name: fb_install_referrer_ad_id
+      - name: fb_install_referrer_account_id
+      - name: fb_install_referrer_publisher_platform
+      - name: inserted_timestamp
+      - name: s3_file_path
+        description: the s3 path of the source file for this record
+
+  - name: sessions_with_pi
+    description: P1 Adjust session events
+    constraints:
+      - type: primary_key
+        columns: [ adid, created_at ]
+    columns:
+      - name: adid
+        description: Adjust id
+        tests:
+          - not_null
+      - name: app_id
+        description: Adjust's app identifier
+      - name: app_version
+      - name: created_at
+        description: timestamp of the event
+        tests:
+          - not_null
+      - name: installed_at
+        description: timestamp of the event
+        tests:
+          - not_null
+      - name: tracker
+        description: Adjust's attribution tracker
+      - name: store
+        description: target store where the click happened
+      - name: ip_address
+        description: Device IP address (!PI)
+      - name: time_spent
+      - name: last_time_spent
+      - name: is_organic
+        description: whether the install is organic
+      - name: idfa
+        description: ID for advertisers (iOS only) (!PI)
+      - name: idfv
+        description: ID for vendors (iOS only) (!PI)
+      - name: android_id
+        description: Android ID (Android only) (!PI)
+      - name: gps_adid
+        description: Google Play Advertiser ID (!PI)
+      - name: app_name
+        description: Adjust's app name
+      - name: app_name_dashboard
+      - name: username
+      - name: isp
+        description: Device internet service provider (!PI)
+      - name: tracking_limited
+        description: whether limited ad tracking is turned on
+      - name: timezone
+        description: Device time zone
+      - name: connection_type
+        description: Internet connection Type (e.g. celluar)
+      - name: deeplink
+        description: deeplink URL appended to click URL
+      - name: country
+        description: Device two-character country code (lower case)
+      - name: app_version_temp
+      - name: app_version_short
+
+  - name: trackers
+    description: P1 mapping tracker strings to network/campaign/adgroup/creative
+    constraints:
+      - type: primary_key
+        columns: [ app_name, tracker ]
+    columns:
+      - name: app_name
+        description: application name
+      - name: tracker
+        description: Adjust's attribution tracker
+      - name: network_name
+        description: latest Network name associated with the tracker
+      - name: campaign_name
+        description: latest Campaign name associated with the tracker
+      - name: adgroup_name
+        description: latest Adgroup name associated with the tracker
+      - name: creative_name
+        description: latest Creative name associated with the tracker
+      - name: fb_campaign_group_id
+      - name: fb_campaign_id
+      - name: fb_adgroup_id

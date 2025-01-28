@@ -1,0 +1,520 @@
+version: 2
+
+models:
+  - name: metrics_daily_ad_revenue
+    description: Daily Total Ad Revenue
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - client_type
+    columns:
+    - name: date_utc
+      description: date
+    - name: client_type
+      description: client type
+    - name: ad_revenue
+      description: total ad revenue
+
+  - name: metrics_daily_purchase_revenue
+    description: Daily Total Purchase Revenue
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - client_type
+    columns:
+    - name: date_utc
+      description: date
+    - name: subscription_revenue
+      description: Wireless subscription revenue (minus refunds) in USD
+    - name: credit_revenue
+      description: International Credits revenue (minus refunds) in USD
+    - name: device_and_plan_revenue
+      description: Device and Plan Purchase revenue (minus refunds) in USD
+    - name: other_revenue
+      description: Device and Other Purchase revenue (minus refunds) in USD
+
+  - name: metrics_daily_iap_revenue
+    description: Daily Total IAP Revenue
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - client_type
+    columns:
+    - name: date_utc
+      description: date
+    - name: client_type
+      description: client type
+    - name: country_code
+      description: country code of where the transaction occurs
+    - name: sku_id
+      description: sku_id of the item bring purchased
+    - name: product_category
+      description: category of purchase
+    - name: renewal_period
+      description: renewal frequency of the product
+    - name: units_sold
+      description: the number of units has been sold
+    - name: units_refunded
+      description: the number of units has been refunded
+    - name: net_units_sold
+      description: the number of net units has been sold (units_sold - units_refunded)
+    - name: sales_revenue
+      description: amount of iap revenue paid by customers in USD for sales in USD
+    - name: refund
+      description: amount of iap revenue received by customers in USD for refund in USD
+    - name: gross_revenue
+      description: amount of iap revenue (sales_revenue - refund) TN received before Google's / Apple's cut in USD
+    - name: net_revenue
+      description: amount of iap revenue TN received after Google's / Apple's cut in USD
+
+  - name: metrics_daily_active_users
+    description: Daily Active Users
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - client_type
+    columns:
+    - name: date_utc
+      description: date
+    - name: client_type
+      description: client type
+    - name: dau
+      description: total daily active users
+    - name: new_dau
+      description: number of users who are new (age = 0)
+    - name: d1_return_dau
+      description: number of returning users with age = 1
+    - name: d7_return_dau
+      description: number of returning users with age = 7
+    - name: d14_return_dau
+      description: number of returning users with age = 14
+    - name: d30_return_dau
+      description: number of returning users with age = 30
+
+  - name: metrics_daily_summary
+    description: A daily summary of commonly used metrics
+    columns:
+    - name: date_utc
+      description: date
+    - name: client_type
+      description: client type
+    - name: dau
+      description: total daily active users
+    - name: new_dau
+      description: number of users who are new (age = 0)
+    - name: d1_return_dau
+      description: number of returning users with age = 1
+    - name: d7_return_dau
+      description: number of returning users with age = 7
+    - name: d14_return_dau
+      description: number of returning users with age = 14
+    - name: d30_return_dau
+      description: number of returning users with age = 30
+    - name: ad_revenue
+      description: total ad revenue in USD
+    - name: iap_credit_revenue
+      description: International credit revenue (minus refunds) from IAP in USD
+    - name: iap_sub_revenue
+      description: subscription revenue (minus refunds) from IAP in USD
+    - name: iap_other_revenue
+      description: other revenue (minus refunds) from IAP in USD
+    - name: wireless_subscription_revenue
+      description: Wireless subscription revenue (minus refunds) in USD
+    - name: device_and_plan_revenue
+      description: Device and Plan Purchase revenue (minus refunds) in USD
+    - name: device_and_other_purchase_revenue
+      description: Device and Other Purchase revenue (minus refunds) in USD
+    - name: free_app_net_revenue
+      description: Ad + IAP Revenue (minus refunds) in USD
+    - name: wireless_net_revenue
+      description: Plan + Device + Other wireless purchase (minus refunds) + credit purchases by subscribers in USD
+    - name: total_outbound_calls
+      description: Total outbound calls made per day per client
+    - name: total_inbound_calls
+      description: Total inbound calls received per day per client
+    - name: total_outbound_messages
+      description: Total outbound messages sent per day per client
+    - name: total_inbound_messages
+      description: Total inbound messages received per day per client
+    - name: inserted_at
+      description: data inserted timestamp
+    - name: inserted_by
+      description: distinguishes rows added by backfill vs dbt
+
+  - name: metrics_monthly_active_users
+    description: Monthly active users / the number of users who have been active in the past 30 days on a daily basis aggregated by client type, channel, and country
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - client_type
+            - channel
+            - country_code
+    columns:
+    - name: date_utc
+      description: date
+    - name: client_type
+      description: client type
+      tests:
+        - accepted_values:
+            values: ['TN_ANDROID', 'TN_IOS', '2L_ANDROID', 'TN_IOS_FREE']
+    - name: channel
+      description: user acqusition channel
+      tests:
+        - accepted_values:
+            values: ['paid', 'organic']
+    - name: country_code
+      description: country code
+    - name: mau
+      description: the number of users who have been active in the past 30
+
+  - name: metrics_daily_ad_total_revenue
+    description: A daily summary of revenue from ad and iap based on client and country filters
+    columns:
+    - name: date_utc
+      description: date
+    - name: client_type
+      description: client type
+    - name: country_code
+      description: country_code
+    - name: daily_ad_revenue
+      description: daily ad revenue
+    - name: daily_iap_revenue
+      description: daily iap revenue
+    - name: total_revenue
+      description: revenue from both iap and ad
+    - name: inserted_timestamp
+      description: data inserted timestamp
+  
+  - name: metrics_daily_app_time_sessions
+    description: Capturing daily number of app sessions and durations for non-bad users
+    columns:
+    - name: date_utc
+      description: date
+    - name: client_type
+      description: client_type
+    - name: num_sessions
+      description: number of sessions
+    - name: time_in_app_mins_per_day
+      description: duration of the session measured in minutes
+    - name: time_in_app_hours_per_day
+      description: duration of the session measured in hours 
+    - name: inserted_timestamp
+      description: data inserted timestamp
+
+  - name: metrics_daily_sim_dau_generated_revenue
+    description: Capturing daily SIM DAU and generated revenue
+    columns:
+    - name: date_utc
+      description: date
+    - name: client_type
+      description: client_type
+    - name: sub_type
+      description: subscription type ie Free (no SIM), SIM - 4 categories
+    - name: country_code
+      description: country_code
+    - name: sim_dau
+      description: DAU who also purchased the SIM
+    - name: daily_ad_revenue
+      description: daily_ad_revenue
+    - name: inserted_timestamp
+      description: data inserted timestamp
+
+  - name: metrics_daily_dau_generated_revenue
+    description: Capturing daily DAU and DAU generating ad revenue counts
+    columns:
+    - name: date_utc
+      description: date
+    - name: client_type
+      description: client type
+    - name: country_code
+      description: country_code
+    - name: total_dau_generated_revenue
+      description: total count of revenue generated DAU users whose ad revenue > 0
+    - name: total_dau
+      description: total daily active users
+    - name: inserted_timestamp
+      description: data inserted timestamp
+
+  - name: metrics_daily_userlevel_app_time_sessions
+    description: Capturing userlevel daily number of app sessions along with the duration incl bad users
+    columns:
+    - name: date_utc
+      description: date
+    - name: username
+      description: username
+    - name: client_type
+      description: client_type
+    - name: num_sessions
+      description: number of sessions
+    - name: time_in_app_mins_per_day
+      description: duration of the session measured in minutes
+    - name: time_in_app_hours_per_day
+      description: duration of the session measured in hours 
+    - name: inserted_timestamp
+      description: data inserted timestamp
+  
+  - name: metrics_daily_userlevel_retention
+    description: Capturing userlevel daily retention dimensions and measures for non-bad users
+    columns:
+    - name: date_utc
+      description: date, which is used as a dimension field
+    - name: username
+      description: username 
+    - name: client_type
+      description: client type
+    - name: country_code
+      description: country code
+    - name: installs_type
+      description: type of installs, whether organic or paid 
+    - name: sim_plan_type
+      description: data inserted timestamp
+    - name: segment
+      description: duration of the session measured in hours 
+    - name: cohort_utc
+      description: the creation date of this user set 
+    - name: day_from_cohort
+      description: the number of days between cohort date and active date
+    - name: dau
+      description: total daily active users
+    - name: adjusted_revenue
+      description: sum of revenue per person per day 
+    - name: data_plan_revenue
+      description: Wireless subscription revenue (minus refunds) in USD
+    - name: total_cost
+      description: fixed cost of having a subscription and the data usage cost
+    - name: time_in_app_mins
+      description: duration of the session measured in minutes
+    - name: inserted_timestamp
+      description: data inserted timestamp
+
+  - name: metrics_daily_acquisition_spend
+    description: Capturing daily acquisition cost
+    columns:
+    - name: date_utc
+      description: date
+    - name: client_type
+      description: client type as per SLT tableau dashboard requirements
+    - name: ua_cost
+      description: user acquisition cost
+
+  - name: metrics_daily_iap_unitssold_revenue
+    description: Capturing daily IAP units sold sales numbers for each product category
+    columns:
+    - name: date_utc
+      description: date
+    - name: client_type
+      description: client type as per SLT tableau dashboard requirements
+    - name: product_category
+      description: category of purchase
+    - name: daily_units_sold
+      description: total units sold
+    - name: daily_iap_revenue
+      description: daily iap revenue
+
+  - name: metrics_daily_impressions
+    description: Capturing daily impressions
+    columns:
+    - name: date_utc
+      description: date
+    - name: client_type
+      description: client type as per SLT tableau dashboard requirements
+    - name: total_impressions
+      description: sum of impressions
+
+  - name: metrics_daily_installs
+    description: Capturing daily app installs
+    columns:
+    - name: date_utc
+      description: date
+    - name: client_type
+      description: client type as per SLT tableau dashboard requirements
+    - name: country_code
+      description: country code
+    - name: installs
+      description: total installs
+    - name: paid
+      description: total count of paid installs
+    - name: organic
+      description: total count of organic installs
+
+  - name: metrics_daily_sim_activations
+    description: Capturing daily sim activations
+    columns:
+    - name: activation_date
+      description: date of activation
+    - name: userset_segment
+      description: decides the userset of the cohort(new users or existing users)
+    - name: product_id
+      description: product id
+    - name: nbr_user_set_activations
+      description: aggregated count of user set activations
+
+  - name: metrics_daily_sim_subscription
+    description: Capturing daily sim subscriptions
+    columns:
+    - name: date_utc
+      description: date
+    - name: plan_family
+      description: category of the wireless plan
+    - name: free_subscription
+      description: count of free subscription users
+    - name: paid_subscription
+      description: count of paid subscription users
+    - name: paid_data_plan_users
+      description: count of paid data plan users
+    - name: wireless_users
+      description: count of wireless users
+
+  - name: metrics_sim_orders
+    description: This table captures daily sim orders
+    columns:
+    - name: date_utc
+      description: date
+    - name: purchase_platform
+      description: purchase platform(app or web)
+    - name: userset_segment
+      description: decides the userset of the cohort(new users or existing users)
+    - name: charge_type
+      description: charge type(free or paid)
+    - name: sim_orders
+      description: aggregated count of sim orders
+    - name: sim_nums
+      description: aggregated count of unique sim ordered users
+    - name: sim_orders_nbr_usersets
+      description: aggregated count of unique sim ordered usersets
+
+  - name: metrics_daily_embrace_metrics_log_values
+    description: Capturing embrace metrics value along with clients, os, app versions
+    columns:
+    - name: date_utc
+      description: date
+    - name: recorded_hour
+      description: hours captured from the timestamp
+    - name: client_type
+      description: client type
+    - name: metric_name
+      description: metric name
+    - name: device_model
+      description: device model
+    - name: app_version
+      description: app version
+    - name: os_version
+      description: os version
+    - name: total_value
+      description: sum of value
+    - name: inserted_at
+      description: data inserted timestamp
+    - name: inserted_by
+      description: distinguishes rows added by backfill vs dbt
+
+  - name: metrics_daily_user_message_summary
+    description: This model tracks daily messaging metrics at the user level, 
+      recording the count of inbound and outbound messages.
+    columns:
+      - name: date_utc
+        description: Party planner event created_at date
+      - name: user_set_id
+        description: user_set_id
+      - name: user_id_hex
+        description: user_id_hex
+      - name: username
+        description: username
+      - name: client_type
+        description: client type
+      - name: country_code
+        description: country_code
+      - name: total_outbound_messages
+        description: Total number of outbound messages sent by the user_set on a given day.
+      - name: total_inbound_messages
+        description: Total number of inbound messages received by the user_set on a given day.
+
+  - name: metrics_daily_user_call_summary
+    description: This model captures daily user level calling data,
+      including inbound and outbound call counts and durations.
+    columns:
+      - name: date_utc
+        description: Party planner event created_at date
+      - name: user_set_id
+        description: user_set_id
+      - name: user_id_hex
+        description: user_id_hex
+      - name: username
+        description: username
+      - name: client_type
+        description: client type
+      - name: country_code
+        description: country_code
+      - name: total_outbound_calls
+        description: The total number of outbound calls made by the user_set on a given day.
+      - name: total_inbound_calls
+        description: The total number of inbound calls received by the user_set on a given day.
+      - name: outbound_call_duration
+        description: The total duration of all outbound calls made by the user_set, in seconds.
+      - name: inbound_call_duration
+        description: The total duration of all inbound calls received by the user_set, in seconds.
+
+  - name: metrics_daily_user_summary
+    description: This model summarizes daily userlevel metrics like inbound outbound calls, messages etc.
+    columns:
+      - name: date_utc
+        description: Party planner event created_at date
+      - name: user_set_id
+        description: user_set_id
+      - name: total_outbound_calls
+        description: Total number of outbound calls made by the user.
+      - name: total_inbound_calls
+        description: Total number of inbound calls received by the user.
+      - name: total_outbound_call_duration
+        description: Total duration (in seconds) of outbound calls made by the user.
+      - name: total_inbound_call_duration
+        description: Total duration (in seconds) of inbound calls received by the user.
+      - name: total_outbound_messages
+        description: Total number of outbound messages sent by the user.
+      - name: total_inbound_messages
+        description: Total number of inbound messages received by the user.
+      - name: total_inbound_call_duration
+        description: Total duration of inbound calls.
+      - name: total_msgs
+        description: Sum of total outbound and inbound messages.
+      - name: total_calls
+        description: Sum of total outbound and inbound calls.
+      - name: total_activity
+        description: Sum of total calls and total messages, representing the overall activity for the user per day.
+
+  - name: metrics_daily_user_iap
+    description: This model captures IAP transactions at a user level, including subscriptions 
+                  and consumables across ios, andriod clients.
+    columns:
+    - name: date_utc
+      description: The UTC date of the transaction or activity.
+    - name: iap_start_dtm
+      description: The timestamp when the IAP transaction started or was initiated.
+    - name: iap_end_dtm
+      description: The timestamp when the IAP transaction ended or expired.
+    - name: user_id_hex
+      description: A unique identifier for the user in hexadecimal format.
+    - name: username
+      description: The username associated with the user_id.
+    - name: user_set_id
+      description: The user set ID for the corresponding user.
+    - name: client_type
+      description: The client type, such as TN_IOS_FREE or ANDROID_INCL_2L.
+    - name: sku_name
+      description: The SKU (product) name of the IAP item.
+    - name: transaction_status
+      description: The status of the transaction, such as New Purchase, Renewal, or Reactivated.
+    - name: transaction_id
+      description: The unique identifier for the IAP transaction.
+    - name: parent_transaction_id
+      description: The parent transaction ID associated with the IAP transaction.
+    - name: sku_category
+      description: The category of the SKU as defined in the IAP SKU feature mapping.
+    - name: sku_selling_price
+      description: The selling price of the SKU in USD.
+    - name: sku_renewal_period
+      description: The renewal period of the SKU, if applicable.

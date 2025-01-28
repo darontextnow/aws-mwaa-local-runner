@@ -1,0 +1,101 @@
+version: 2
+
+models:
+  - name: revenue_user_daily_iap
+    description: IAP revenue/refund by user by date
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - username
+            - date_utc
+            - client_type
+            - product_category
+            - renewal_period
+    columns:
+      - name: date_utc
+        description: date of revenue/refund occurrence 
+        tests:
+          - not_null
+      - name: username
+        description: username
+      - name: client_type
+        description: client type
+        tests:
+          - not_null
+      - name: product_category
+        description: category of purchase
+      - name: renewal_period
+        description: renewal frequency of the product
+      - name: iap_revenue
+        description: sum of iap revenue or refund
+        tests:
+          - not_null
+
+  - name: revenue_user_daily_ad
+    description: Ad revenue by user by date
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - username
+            - date_utc
+            - client_type
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: date_utc
+        description: date of impression
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - not_null
+      - name: matched_impressions
+        description: impressions which can be assigned to username
+   
+      - name: matched_revenue
+        description: revenue which is associated with the matched impressions
+      - name: unmatched_impressions
+        description: impressions matched to a specific ad type
+      - name: in_house_impressions
+        description: impressions generated with in-house ads
+      - name: revenue_adjustments
+        description: revenue adjustments coming from those impressions only matched by ad type
+      - name: avg_unattributed_revenue
+        description: revenue which can only be attributes to the users as a whole
+      - name: adjusted_impressions
+        description: sum of impressions per user per day
+        tests:
+          - not_null
+      - name: adjusted_revenue
+        description: sum of revenue per person per day
+        tests:
+          - not_null
+
+  - name: revenue_user_daily_purchase
+    description: Purchase revenue by user by date minus any refunds given to a user on that date
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - username
+            - date_utc
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: date_utc
+        description: date of purchase/refund
+        tests:
+          - not_null
+      - name: item_category
+        description: category of the purchase
+        tests:
+          - accepted_values:
+              values: ['subscription', 'credit', 'device_and_plan', 'other']
+      - name: revenue
+        description: sum of purchase revenue (net of refunds) in USD
+        tests:
+          - not_null

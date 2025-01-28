@@ -1,0 +1,341 @@
+version: 2
+
+models:
+
+  - name: cost_monthly_message_cost
+    description: Estimates of monthly SMS and MMS costs (not actual billing cost). Syniverse billing cycle is calendar month.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - period_start
+            - type_of_message
+    columns:
+      - name: period_start
+        description: the start of the monthly period
+        tests:
+          - not_null
+      - name: period_end
+        description: the end of the monthly period
+        tests:
+          - not_null
+      - name: type_of_message
+        description: type of message
+        tests:
+          - accepted_values:
+              values: ['SMS', 'MMS']
+      - name: num_messages
+        description: number of outbound messages
+      - name: bulk_cost
+        description: estimated total cost for the period
+      - name: cost_per_message
+        description: estimated average cost of one message for the period
+
+  - name: cost_user_daily_message_cost
+    description: Daily message cost inccured by each user
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - username
+            - client_type
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: date_utc
+        description: date
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - accepted_values:
+              values: ['TN_ANDROID', 'TN_IOS', '2L_ANDROID', 'TN_IOS_FREE', 'TN_WEB']
+      - name: MMS_number_messages
+        description: Number of billable (outbound) MMS messages
+      - name: total_MMS_cost
+        description: MMS Cost inccured by user on this date in USD
+      - name: SMS_number_messages
+        description: Number of billable (outbound) SMS messages
+      - name: total_SMS_cost
+        description: SMS Cost inccured by user on this date in USD
+
+  - name: cost_user_daily_call_cost
+    description: Daily calling cost incurred by each user
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - username
+            - client_type
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: date_utc
+        description: date
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - accepted_values:
+              values: ['TN_ANDROID', 'TN_IOS', '2L_ANDROID', 'TN_IOS_FREE', 'TN_WEB']
+      - name: termination_cost
+        description: cost paid to the term partners
+        tests:
+          - not_null
+      - name: layered_paas_cost
+        description: cost associated with layered PAAS
+        tests:
+          - not_null
+
+  - name: cost_daily_pp_call_cost
+    description: Daily calling cost incurred by each user
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - user_id
+    columns:
+      - name: user_id
+        description: user_id_hex value
+        tests:
+          - not_null
+      - name: date_utc
+        description: date
+        tests:
+          - not_null
+      - name: total_calls
+        description: total number of calls made by the user on a given day
+        tests:
+          - not_null
+      - name: rounded_duration
+        description: duration in seconds rounded to the nearest 6 second increment
+        tests:
+          - not_null
+      - name: amount_incurred
+        description: cost paid to the term partners
+        tests:
+          - not_null
+      - name: amount_charged
+        description: cost paid by users
+        tests:
+          - not_null
+
+  - name: cost_mdn_daily_mrc_cost
+    description: Estimated daily MRC cost by each subscriber by date
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - mdn
+            - date_utc
+    columns:
+      - name: mdn
+        description: MDN
+        tests:
+          - not_null
+      - name: date_utc
+        description: date
+        tests:
+          - not_null
+      - name: network
+        description: Network of the item associated with the given MDN
+        tests:
+          - accepted_values:
+              values: ['Sprint', 'Kore', 'ATT']
+      - name: pool_name
+        description: Pool name for usage pooling
+      - name: item_uuid
+        description: Item UUID
+      - name: imsi
+        description: IMSI
+      - name: subscription_rate_plan_id
+        description: active subscription rate plan ID for item
+      - name: code
+        description: active subscription rate plan code
+      - name: mrc_cost
+        description: MRC cost for the day
+      - name: mb_contribution_to_pool
+        description: Amount of data contributed to the pool in Megabytes
+      - name: mou_contribution_to_pool
+        description: Amount of MOU contributed to the pool in Megabytes
+
+  - name: cost_monthly_sprint_cost
+    description: Estimated Sprint Data Usage (overage) Cost by billing cycle. Current partial cycle is also included.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - period_start
+            - pool_name
+    columns:
+      - name: period_start
+        description: The first date of the Sprint billing cycle
+      - name: period_end
+        description: The laste date of the Sprint billing cycle
+      - name: pool_name
+        description: Pool name for usage pooling
+      - name: subscriber_days
+        description: Number of user days in the pool for the period
+      - name: pool_mb_limit
+        description: Total Available Pooled MOU/MBs
+      - name: pool_mb_usage
+        description: Total MOU/MBs
+      - name: pool_mb_overage
+        description: MOU/MBs Overage
+      - name: pool_mb_overage_charge
+        description: MOU/MBs Overage Charges
+      - name: pool_overage_cost_per_mb
+        description: MOU/MBs Overage Charges per Overage MB
+      - name: pool_mou_limit
+        description: Total Available Pooled MOU (for pools with separate MOU limit)
+      - name: pool_mou_usage
+        description: Total MOU (for pools with separate MOU limit)
+      - name: pool_mou_overage
+        description: MOU Overage (for pools with separate MOU limit)
+      - name: pool_mou_overage_charge
+        description: MOU Overage Charges (for pools with separate MOU limit)
+      - name: pool_overage_cost_per_mou
+        description: MOU Overage Charges per Overage MOU  (for pools with separate MOU limit)
+
+  - name: cost_mdn_daily_sprint_usage_cost
+    description: Estimated daily Sprint MRC and Usage Cost by MDN
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - mdn
+            - date_utc
+    columns:
+      - name: mdn
+        description: MDN
+        tests:
+          - not_null
+      - name: date_utc
+        description: date
+        tests:
+          - not_null
+      - name: pool_name
+        description: Pool name for usage pooling
+      - name: mrc_cost
+        description: Daily MRC cost. 31st day of a month is free, and cost for Feb 29/30 is incurred even if they don’t exist
+      - name: mb_usage
+        description: Data usage MB
+      - name: cumulative_mb_usage
+        description: Cumulative data usage in Sprint billing period in MB
+      - name: mb_usage_overage_cost
+        description: Data usage cost
+
+  - name: cost_user_daily_sprint_cost
+    description: Estimated daily Sprint MRC and Usage Cost by user
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - username
+            - date_utc
+    columns:
+      - name: username
+        description: username
+      - name: mdn
+        description: MDN
+        tests:
+          - not_null
+      - name: date_utc
+        description: date
+        tests:
+          - not_null
+      - name: pool_name
+        description: Pool name for usage pooling
+      - name: mrc_cost
+        description: Daily MRC cost. 31st day of a month is free, and cost for Feb 29/30 is incurred even if they don’t exist
+      - name: mb_usage
+        description: Data usage MB
+      - name: cumulative_mb_usage
+        description: Cumulative data usage in period in MB
+      - name: mb_usage_overage_cost
+        description: Data usage cost
+
+  - name: cost_user_daily_tmobile_cost
+    description: Estimated daily tmobile MRC and Usage Cost by user
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - username
+            - date_utc
+    columns:
+      - name: username
+        description: username
+      - name: mdn
+        description: MDN
+        tests:
+          - not_null
+      - name: date_utc
+        description: date
+        tests:
+          - not_null
+      - name: carrier
+        description: carrier name/partner name for tmobile
+      - name: pool_name
+        description: Pool name for usage pooling
+      - name: mrc_cost
+        description: Daily MRC cost. 31st day of a month is free, and cost for Feb 29/30 is incurred even if they don’t exist
+      - name: mb_usage
+        description: Data usage MB
+      - name: cumulative_mb_usage
+        description: Cumulative data usage in period in MB
+      - name: mb_usage_overage_cost
+        description: Data usage cost
+
+  - name: cost_pp_monthly_message_cost
+    description: Estimates of monthly SMS and MMS costs (not actual billing cost). Syniverse billing cycle is calendar month.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - month_utc
+            - type_of_message
+    columns:
+      - name: month_utc
+        description: Month of the billing period
+        tests:
+          - not_null
+      - name: type_of_message
+        description: type of message
+        tests:
+          - accepted_values:
+              values: ['SMS', 'MMS']
+      - name: num_messages
+        description: number of outbound messages
+      - name: num_senders
+        description: number of distinct users sending outbound messages
+      - name: bulk_cost
+        description: estimated total cost for the period
+      - name: cost_per_message
+        description: estimated average cost of one message for the period
+      - name: cost_per_user
+        description: estimated average cost of one user for the period
+
+  - name: cost_pp_daily_message_cost
+    description: Daily message cost inccured by each user
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - username
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: date_utc
+        description: date
+        tests:
+          - not_null
+      - name: MMS_number_messages
+        description: Number of billable (outbound) MMS messages
+      - name: total_MMS_cost
+        description: MMS Cost inccured by user on this date in USD
+      - name: SMS_number_messages
+        description: Number of billable (outbound) SMS messages
+      - name: total_SMS_cost
+        description: SMS Cost inccured by user on this date in USD

@@ -1,0 +1,14 @@
+version: 2
+
+models:
+    - name: show_ads
+      description: P1 Day from which we started serving Ads to a device
+      constraints:
+        - type: primary_key
+          columns: [ app_id, adid ]
+      columns:
+        - name: app_id
+        - name: adid
+          description: Adjust's device identifier
+        - name: show_ad_date
+          description: Date from which we started serving Ads to a device

@@ -1,0 +1,138 @@
+version: 2
+
+sources:
+  - name: census
+    schema: public
+    tables:
+      - name: zip_zcta_mapping
+        description: Maps ZCTA to Zip
+      - name: zip_usa_geo_mapping
+        description: Maps ZCTA to geolevel attributes
+      - name: zip_dma_mapping_2020
+        description: Maps ZIP to DMA
+      - name: census_hhi_acsst5y2022_s1901
+        description: Census data for Household Income as per https://data.census.gov/table/ACSST5Y2022.S1902?
+          t=Income (Households, Families, Individuals)&g=010XX00US$8600000_160XX00US3605309
+      - name: census_population_decennialdhc2020_p2
+        description: Census Data for Urban/Rural Population as per https://data.census.gov/table/DECENNIALDHC2020.P2?
+          q=P2&g=010XX00US,$8600000&d=DEC Demographic and Housing Characteristics
+      - name: census_race_decennialdhc2020_p3
+        description: Census Data for Race Ethinicity per https://data.census.gov/table/DECENNIALDHC2020.P3?tp=true
+      - name: census_age_sex_acsst5y2022_s0101
+        description: Census Data for Age group as per https://data.census.gov/table/ACSST5Y2022.S0101?
+          g=010XX00US$8600000&tp=true
+
+models:
+  - name: zip_geolevel_mapping
+    description: This lookup model contains location data on geolevel attributes and DMA.
+    columns:
+      - name: zip
+        description: The postal code of the location.
+      - name: zcta
+        description: ZIP Code Tabulation Area.
+      - name: country
+        description: Country where the ZIP code is located.
+      - name: zip
+        description: The ZIP code itself, typically the same as ZIP_CODE but may differ in some contexts.
+      - name: city
+        description: The city corresponding to the ZIP code.
+      - name: state
+        description: The state or province where the ZIP code is located.
+      - name: stusab
+        description: State abbreviation where the ZIP code is located.
+      - name: county
+        description: The name of the county associated with the ZIP code.
+      - name: county_fips
+        description: Federal Information Processing Standard (FIPS) code for the county.
+      - name: community
+        description: Name of the community or area within the county.
+      - name: community_code
+        description: Code representing the community.
+      - name: latitude
+        description: Latitude coordinate of the location.
+      - name: longitude
+        description: Longitude coordinate of the location.
+      - name: accuracy
+        description: Accuracy of the geographic coordinates.
+      - name: dma
+        description: Designated Market Area code.
+      - name: dma_name
+        description: Name of the Designated Market Area.
+
+  - name: census_zip_hhi
+    description: This model contains household income data based on the US Census Bureau's American Community Survey
+        for ZCTA in 2022.
+    columns:
+      - name: geo_id
+        description: Geographic identifier corresponding to the location.
+      - name: zcta
+        description: ZIP Code Tabulation Area.
+      - name: hhi
+        description: Household income in the area.
+      - name: hhi_10k_less
+        description: Percentage of households with an income of less than $10,000.
+      - name: hhi_10k_15k
+        description: Percentage of households with an income between $10,000 and $15,000.
+      - name: hhi_15k_25k
+        description: Percentage of households with an income between $15,000 and $25,000.
+      - name: hhi_25k_35k
+        description: Percentage of households with an income between $25,000 and $35,000.
+      - name: hhi_35k_50k
+        description: Percentage of households with an income between $35,000 and $50,000.
+      - name: hhi_50k_75k
+        description: Percentage of households with an income between $50,000 and $75,000.
+      - name: hhi_75k_100k
+        description: Percentage of households with an income between $75,000 and $100,000.
+      - name: hhi_100k_150k
+        description: Percentage of households with an income between $100,000 and $150,000.
+      - name: hhi_150k_200k
+        description: Percentage of households with an income between $150,000 and $200,000.
+      - name: hhi_200k_more
+        description: Percentage of households with an income greater than $200,000.
+      - name: hhi_median
+        description: Median household income in the area.
+      - name: hhi_mean
+        description: Average household income in the area.
+
+  - name: census_zip_population
+    description: This model provides decennial census population data for ZCT) from the 2020 census, 
+      including urban and rural population segments.
+    columns:
+      - name: geo_id
+        description: Geographic identifier for the ZCTA.
+      - name: zcta
+        description: ZIP Code Tabulation Area.
+      - name: total_population
+        description: Total population in the ZCTA.
+      - name: total_urban_pop
+        description: Total urban population in the ZCTA.
+      - name: total_rural_pop
+        description: Total rural population in the ZCTA.
+      - name: urban_pop_pct_bucket
+        description: Categorical bucket for the percentage of urban population in the ZCTA, based on total population.
+      - name: rural_pop_pct_bucket
+        description: Categorical bucket for the percentage of rural population in the ZCTA, based on total population.
+
+  - name: census_zip_race
+    description: This model contains race and ethnicity data from the 2020 Decennial Census for ZCTA.
+    columns:
+      - name: geo_id
+        description: Geographic identifier corresponding to the location.
+      - name: zcta
+        description: ZIP Code Tabulation Area.
+      - name: total_population
+        description: Total population in the geographic area.
+      - name: white_population
+        description: Number of people identified as White in the area.
+      - name: black_population
+        description: Number of people identified as Black or African American in the area.
+      - name: american_indian_alaska_population
+        description: Number of people identified as American Indian or Alaska Native.
+      - name: asian_population
+        description: Number of people identified as Asian in the area.
+      - name: hawaiian_pacific_population
+        description: Number of people identified as Native Hawaiian or Other Pacific Islander.
+      - name: some_other_race_alone
+        description: Number of people identified as Some Other Race alone.
+      - name: two_more_race
+        description: Number of people identified as being of two or more races.

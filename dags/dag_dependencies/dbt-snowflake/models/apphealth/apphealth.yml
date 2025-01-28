@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: apphealth
+    tables:
+      - name: call_ratings
+        identifier: call_ratings
+      - name: call_end
+        identifier: call_end
+      - name: call_outgoing
+        identifier: call_outgoing
+
+models:
+  - name: call_ratings_combined_sources
+    description: view which combines the two sources of call_rating data (historical firebase data with current party_planner_realtime data).

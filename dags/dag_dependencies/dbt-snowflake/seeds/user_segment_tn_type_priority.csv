@@ -1,0 +1,17 @@
+tn_type_priority,tn_type
+1,TN Employee/with data
+2,paid/with data
+3,paid/no data
+4,free/with data
+5,free/no data
+6,Non-Sub
+11,ILD Credits (Internal)
+12,ILD Credits (IAP)
+21,Ad Free+ (annually)
+22,Ad Free+ (monthly)
+23,Ad Free Lite (annually)
+24,Ad Free Lite (monthly)
+31,Premium Number (annually)
+32,Premium Number (monthly)
+33,Lock In Number (annually)
+34,Lock In Number (monthly)

@@ -1,0 +1,99 @@
+version: 2
+
+sources:
+  - name: stripe
+    schema: billing_service
+    tables:
+      - name: stripe_charges
+      - name: stripe_disputes
+      - name: stripe_refunds
+
+models:
+  - name: stripe_charges
+    description: Stripe charges transactions
+    columns:
+      - name: stripe_charge_id
+        description: Stripe charge ID
+        tests:
+          - not_null
+          - unique
+      - name: receipt_id
+        description: Billing Service Receipt ID
+      - name: username
+      - name: created_at
+        description: charge creation timestamp
+      - name: updated_at
+        description: charge last updated timestamp
+      - name: category
+        description: charge category
+        tests:
+          - accepted_values:
+              values: ['capture']
+      - name: payment_provider
+        description: payment processor
+        tests:
+          - accepted_values:
+              values: ['Stripe']
+      - name: identifier
+        description: Stripe charge ID
+      - name: payment_method
+        description: payment method
+      - name: amount
+        description: transaction amount
+      - name: currency
+        description: currency of transaction
+        tests:
+          - accepted_values:
+              values: ['USD']
+      - name: classification
+        description: (deprecated) type of transaction
+      - name: product_id
+        description: (deprecated) product ID purchased
+      - name: device_price
+        description: (deprecated) device price
+      - name: plan_id
+        description: (deprecated) plan ID subscribed
+      - name: plan_stripe_id
+        description: (deprecated) plan Stripe ID subscribed
+      - name: plan_price
+        description: (deprecated) plan price
+
+  - name: stripe_refunds
+    description: Stripe refund transactions
+    columns:
+      - name: stripe_refund_id
+        description: Stripe charge ID for this refund
+        tests:
+          - not_null
+          - unique
+      - name: username
+      - name: created_at
+        description: refund creation timestamp
+      - name: updated_at
+        description: refund last updated timestamp
+      - name: refunded_charge_id
+        description: the original Stripe charge that is refunded
+      - name: category
+        description: charge category
+        tests:
+          - accepted_values:
+              values: ['refund']
+      - name: payment_provider
+        description: payment processor
+        tests:
+          - accepted_values:
+              values: ['Stripe']
+      - name: identifier
+        description: Stripe charge ID for this refund
+      - name: payment_method
+        description: payment method
+      - name: amount
+        description: refunded amount
+      - name: currency
+        description: currency of transaction
+        tests:
+          - accepted_values:
+              values: ['USD']
+    tests:
+      - dbt_utils.equal_rowcount:
+          compare_model: source('stripe', 'stripe_refunds')

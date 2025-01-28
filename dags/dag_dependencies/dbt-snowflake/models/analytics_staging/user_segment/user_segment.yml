@@ -1,0 +1,209 @@
+version: 2
+
+
+sources:
+  - name: user_segment
+    schema: core
+    tables:
+      - name: rfm_segments
+
+models:
+  - name: user_segment_user_set_daily_rfm
+    description: RFM segment of user set
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - user_set_id
+            - rfm_segment
+    columns:
+      - name: date_utc
+        description: run date of the RFM segment
+        tests:
+          - not_null
+      - name: user_set_id
+        description: user set IDs
+        tests:
+          - not_null
+      - name: rfm_segment
+        description: RFM segment
+        tests:
+          - accepted_values:
+              values: ['loyal', 'promising', 'at_risk', 'leaving', 'infrequent', 'new_users']
+
+  - name: user_segment_username_daily_rfm
+    description: RFM segment of username
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - username
+            - rfm_segment
+    columns:
+      - name: date_utc
+        description: run date of the RFM segment
+        tests:
+          - not_null
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: rfm_segment
+        description: RFM segment
+        tests:
+          - accepted_values:
+              values: ['loyal', 'promising', 'at_risk', 'leaving', 'infrequent', 'new_users']
+
+  - name: user_segment_username_last_segment
+    description: current user type and rfm segment by username
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+          - unique
+      - name: rfm_segment
+        description: RFM segment
+        tests:
+          - accepted_values:
+              values: ['loyal', 'promising', 'at_risk', 'leaving', 'infrequent', 'new_users', 'bad_sets', 'other_users', 'unknown']
+      - name: tn_type
+        description: TextNow type
+        tests:
+          - accepted_values:
+              values: ['ILD Purchasers', 'Wireless Subs', 'Ad-Free+ NWTT', 'Ad-Free+ Subs', 'Ad Supported NWTT', 'Ad Supported Free', 'unknown']
+      - name: last_updated
+        description: the date of last client type update
+
+  - name: user_segment_user_set_daily_tn_type
+    description: Assigning TextNow type (a combination of subscription type, ad upgrade type and phone number upgrade type) to user_set_id on a daily basis 
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - user_set_id
+            - sub_type,
+            - consumable_type,
+            - ad_upgrade_type,
+            - phone_num_upgrade_type
+    columns:
+      - name: date_utc
+        description: run date of the TextNow type
+        tests:
+          - not_null
+      - name: user_set_id
+        description: user set IDs
+        tests:
+          - not_null
+      - name: sub_type
+        description: type of TextNow interal plan being subscribed
+        tests:
+          - accepted_values:
+              values: ['TN Employee/with data', 'Non-Sub', 'paid/with data','paid/no data','free/no data','free/with data']
+      - name: consumable_type
+        description: type of consumable product being purchased 
+      - name: ad_upgrade_type
+        description: type of Ad upgrade plan being subscribed via IAP
+      - name: phone_num_upgrade_type
+        description: type of phone number upgrade plan being subscribed via IAP
+
+  - name: user_segment_username_daily_tn_type
+    description: Assigning TextNow type (a combination of subscription type, ad upgrade type and phone number upgrade type) to enabled username on a daily basis
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - username
+            - sub_type,
+            - consumable_type,
+            - ad_upgrade_type,
+            - phone_num_upgrade_type
+    columns:
+      - name: date_utc
+        description: run date of the TextNow type
+        tests:
+          - not_null
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: sub_type
+        description: type of TextNow interal plan being subscribed
+        tests:
+          - accepted_values:
+              
+              values: ['TN Employee/with data', 'Non-Sub', 'paid/with data','paid/no data','free/no data','free/with data']
+      - name: consumable_type
+        description: type of consumable product being purchased 
+      - name: ad_upgrade_type
+        description: type of Ad upgrade plan being subscribed via IAP
+      - name: phone_num_upgrade_type
+        description: type of phone number upgrade plan being subscribed via IAP
+
+  - name: user_segment_user_set_daily_summary
+    description: Assigning TextNow User Type and RFM segment to user_set_id on a daily basis
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - user_set_id
+    columns:
+      - name: date_utc
+        description: run date of the user segment
+        tests:
+          - not_null
+      - name: user_set_id
+        description: user set IDs
+        tests:
+          - not_null
+      - name: sub_type
+        description: type of TextNow interal plan being subscribed
+        tests:
+          - accepted_values:
+              
+              values: ['TN Employee/with data', 'Non-Sub', 'paid/with data','paid/no data','free/no data','free/with data']
+      - name: consumable_type
+        description: type of consumable product being purchased 
+      - name: ad_upgrade_type
+        description: type of Ad upgrade plan being subscribed via IAP
+      - name: phone_num_upgrade_type
+        description: type of phone number upgrade plan being subscribed via IAP
+      - name: rfm_segment
+        description: RFM segment
+        tests:
+          - accepted_values:
+              values: ['loyal', 'promising', 'at_risk', 'leaving', 'infrequent', 'new_users', 'other_users']
+
+  - name: user_segment_username_daily_summary
+    description: Assigning TextNow User Type and RFM segment to username on a daily basis
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - username
+    columns:
+      - name: date_utc
+        description: run date of the user segment
+        tests:
+          - not_null
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: sub_type
+        description: type of TextNow interal plan being subscribed
+        tests:
+          - accepted_values:
+              
+              values: ['TN Employee/with data', 'Non-Sub', 'paid/with data','paid/no data','free/no data','free/with data']
+      - name: consumable_type
+        description: type of consumable product being purchased 
+      - name: ad_upgrade_type
+        description: type of Ad upgrade plan being subscribed via IAP
+      - name: phone_num_upgrade_type
+        description: type of phone number upgrade plan being subscribed via IAP
+      - name: rfm_segment
+        description: RFM segment
+        tests:
+          - accepted_values:
+              values: ['loyal', 'promising', 'at_risk', 'leaving', 'infrequent', 'new_users', 'other_users']

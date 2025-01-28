@@ -1,0 +1,429 @@
+version: 2
+
+sources:
+  - name: ua
+    schema: ua
+    tables:
+      - name: fixed_daily_spend_appendix
+      - name: cpi_appendix
+      - name: adjust_tenjin_mapping
+      - name: liftoff
+      - name: applovin
+      - name: appreciate
+      - name: bidease
+      - name: smadex
+      - name: tenjin_reports
+      - name: tatari_spot_level_metrics
+      - name: tatari_streaming_metrics
+      - name: tatari_linear_spend_and_impressions
+      - name: tatari_streaming_spend_and_impression
+      - name: tatari_user_attribution_view_through_streaming
+      - name: tatari_user_attribution_view_through_streaming_app
+      - name: ua_synthetic_w2r
+      - name: network_fee_structure
+
+  - name: ltv
+    schema: ltv
+    tables:
+      - name: ua_install
+      - name: ua_reattributed
+
+  - name: adjust
+    schema: adjust
+    tables:
+      - name: installed_not_registered_in_last_3_months_group1
+      - name: installed_not_registered_in_last_3_months_group2
+
+models:
+  - name: ua_trackers
+    description: Adjust tracker used for UA spend attribution purposes (using all of them)
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - client_type
+            - adjust_tracker
+    columns:
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: adjust_tracker
+        description: Adjust's attribution tracker
+        tests:
+          - not_null
+      - name: network_name
+        description: latest Network name associated with the tracker
+        tests:
+          - not_null
+      - name: campaign_name
+        description: latest Campaign name associated with the tracker
+      - name: adgroup_name
+        description: latest Adgroup name associated with the tracker
+      - name: creative_name
+        description: latest Creative name associated with the tracker
+
+  - name: ua_kpis
+    description: Adjust reported KPIs used for UA spend attribution purposes, only contains trackers that has positive installs or cost
+    columns:
+      - name: line_item_id
+        description: identifier for the spend line item
+        tests:
+          - unique
+          - not_null
+      - name: cohort_utc
+        description: date of install
+        tests:
+          - not_null
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: adjust_tracker
+        description: Adjust's attribution tracker
+        tests:
+          - not_null
+      - name: country_code
+        description: two-character country code (e.g. US)
+        tests:
+          - not_null
+      - name: device_type
+        description: type of device (e.g. phone/tablet)
+        tests:
+          - not_null
+      - name: installs
+        description: number of installs
+      - name: cost
+        description: total cost spent on installs as reported by Adjust
+
+  - name: ua_post_install_events
+    description: Features for generate post install events for optimization. Untrusted devices are excluded.
+    columns:
+      - name: surrogate_key
+        description: unique key for this table. A hash of client_type and adjust_id
+      - name: client_type
+        description: client type
+      - name: adjust_id
+        description: Adjust Device ID
+      - name: installed_at
+        description: install timestamp
+      - name: active_on_day_3
+        description: 1 if active on day 3, 0 otherwise
+      - name: active_days_first_3days
+        description: number of active days between day 0 and 2 from install date
+      - name: active_days_first_5days
+        description: number of active days between day 0 and 5 from install date
+      - name: active_days_week4
+        description: number of active days between day 22 and 28 from install date
+      - name: permission_android_setup_state
+        description: permission state during first 24 hours. -1/0/1 represent denied/shown/accepted respectively
+      - name: permission_location_state
+        description: permission state during first 24 hours. -1/0/1 represent denied/shown/accepted respectively
+      - name: permission_phone_state
+        description: permission state during first 24 hours. -1/0/1 represent denied/shown/accepted respectively
+      - name: permission_contact_state
+        description: permission state during first 24 hours. -1/0/1 represent denied/shown/accepted respectively
+      - name: permission_microphone_state
+        description: permission state during first 24 hours. -1/0/1 represent denied/shown/accepted respectively
+      - name: d1_out_msg
+        description: number of outgoing messages during first 24 hours since install timestamp
+      - name: d1_in_msg
+        description: number of incoming messages during first 24 hours since install timestamp
+      - name: d3_out_msg
+        description: number of outgoing messages during first 72 hours since install timestamp
+      - name: d3_in_msg
+        description: number of incoming messages during first 72 hours since install timestamp
+      - name: d5_out_msg
+        description: number of outgoing messages during first 120 hours since install timestamp
+      - name: d5_in_msg
+        description: number of incoming messages during first 120 hours since install timestamp
+      - name: d1_out_call_duration
+        description: total outgoing call duration during first 24 hours since install timestamp
+      - name: d1_in_call_duration
+        description: total incoming call duration during first 24 hours since install timestamp
+      - name: d3_out_call_duration
+        description: total outgoing call duration during first 72 hours since install timestamp
+      - name: d3_in_call_duration
+        description: total incoming call duration during first 72 hours since install timestamp
+      - name: d5_out_call_duration
+        description: total outgoing call duration during first 120 hours since install timestamp
+      - name: d5_in_call_duration
+        description: total incoming call duration during first 120 hours since install timestamp
+
+  - name: ua_measurements
+    description: Measurements and metrics by user sets for evaluating UA effectiveness
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - user_set_id
+            - client_type
+    columns:
+      - name: user_set_id
+        description: User set ID
+      - name: client_type
+        description: client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: cohort_utc
+        description: the cohort date of the user set
+      - name: active_days_over_one_year
+        description: total number of active days up to day 365 since cohort_utc
+      - name: week2_retained
+        description: 1 if active between day 8 and 14, 0 otherwise
+      - name: week4_retained
+        description: 1 if active between day 22 and 28, 0 otherwise
+
+  - name: ua_old_user_installs
+    description: Measurements and metrics by installs belonging to existing (old) user sets
+    columns:
+      - name: surrogate_key
+        description: a unique key for Adjust ID / client_type
+      - name: adjust_id
+        description: Adjust device ID
+      - name: installed_at
+        description: install timestamp of device
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: user_set_id
+        description: ID of the user set associated with this install
+      - name: cohort_utc
+        description: the cohort date of the user set associated with this install
+      - name: week2_retained
+        description: 1 if active between day 8 and 14, 0 otherwise
+      - name: active_days_prev_14_days
+        description: total number of active days between day -14 and -1 (installed_at::date is day 0)
+      - name: active_days_next_14_days
+        description: total number of active days between day 1 and 14 (installed_at::date is day 0)
+      - name: active_days_prev_30_days
+        description: total number of active days between day -30 and -1 (installed_at::date is day 0)
+      - name: active_days_next_30_days
+        description: total number of active days between day 1 and 30 (installed_at::date is day 0)
+
+  - name: ua_inferences
+    description: Daily calculation of DAU generation per week 2 retained user
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - client_type
+    columns:
+      - name: date_utc
+        description: date
+      - name: client_type
+        description: client type
+      - name: dau
+        description: Daily active users on that date for the client_type
+      - name: week2_retained_dau
+        description: Daily active users who were active during their week 2
+      - name: c_n
+        description: Active User generation rate per week 2 retained user
+      - name: dau_lift_per_c_n
+        description: average contribution to DAU of an Active User over their first year
+      - name: dau_lift_per_week2_retained
+        description: average contribution to DAU per week 2 retained user; the product of c_n and dau_lift_per_c_n
+
+
+  - name: ua_tatari_streaming_installs
+    description: Tatari streaming TV (App) view-through attributed installs
+    columns:
+      - name: surrogate_key
+        description: unique key for this table. A hash of client_type and adjust_id
+        tests:
+          - not_null
+          - unique
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: adjust_id
+        description: Adjust's device identifier
+        tests:
+          - not_null
+      - name: installed_at
+        description: timestamp of the install event
+        tests:
+          - not_null
+      - name: impressed_at
+        description: Streaming TV impression datetime
+      - name: tracker
+        description: Adjust's attribution tracker
+      - name: is_organic
+        description: whether the install is organic (always FALSE)
+      - name: network_name
+        description: always 'Tatari Streaming TV (app)'
+      - name: campaign_name
+        description: Tatari platform
+      - name: adgroup_name
+        description: Tatari campaign_id
+      - name: creative_name
+        description: Tatari creative_code
+      - name: match_type
+        description: always 'tatari_viewthrough'
+      - name: device_type
+        description: Device Type
+
+  - name: ua_cost_attribution_adjustment
+    description: UA cost attributed to different networking channels
+    columns:
+      - name: cohort_utc
+        description: date of install
+        tests:
+          - not_null
+      - name: client_type
+        description: internally used client type (could be null for wasted ad spend)
+        tests:
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: country_code
+        description: two-character country code (e.g. US)
+       
+      - name: network_name
+        description: name of network/partner
+        tests:
+          - not_null
+      - name: campaign_name
+        description: campaigns conducted by the growth Team
+
+      - name: adgroup_name
+        description: adgroups 
+
+      - name: cost
+        descritption: manual spend and the spend values by adjust
+
+  - name: ua_fixed_spend_appendix_adjustment
+    description: All UA fixed cost adjustments (UA team/third party)
+    columns:
+   
+      - name: cohort_utc
+        description: date of install
+        tests:
+          - not_null
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: network_name
+        description: networks or partners
+        tests:
+          - not_null
+      - name: campaign_name
+        description: campaigns conducted by Textnow
+      
+      - name: country_code
+        description: two-character country code (e.g. US)
+      
+      - name: adgroup_name
+        description: adgroups
+     
+      - name: installs
+        description: number of installs
+      - name: cost
+        description: fixed cost adjustment for the given line item
+
+  - name: ua_appier_cost_adjustment
+    description: Spend adjustments for Appier
+    columns:
+      - name: cohort_utc
+        description: date of install
+        tests:
+          - not_null
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: network_name
+        description: Adjust's attribution tracker
+        tests:
+          - not_null
+      - name: country_code
+        description: two-character country code (e.g. US)
+        tests:
+          - not_null
+      - name: campaign_name
+        description: campaign_name
+        tests:
+          - not_null
+      - name: adgroup_name
+        description: adgroup_name
+      - name: installs
+        description: number of installs
+      - name: cost
+        description: fixed cost adjustment for the given line item
+
+  - name: ua_reengagement_campaign_analysis
+    description: guage performance of re-engagement campaigns
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ADID
+            - CLIENT_TYPE
+            - INSTALLED_AT
+    columns:
+      - name: adid
+        description: adjust_id
+      - name: client_type
+        description: internally used client type
+      - name: installed_at
+        description: date of install
+      - name: registered_at
+        description: date of registration
+      - name: category
+        description: Installed_not_registered_in_last_3_months dividided in two categories
+      - name: inserted_at
+        description: time of insertion
+
+  - name: ua_early_mover_event
+    description: Helps determine the device id's which has met the lp_sessions,outbound_call and  lp_sessions_gte4_out_call_d1 criteria 
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - adjust_id
+            - client_type
+            - installed_at
+    columns:
+      - name: adjust_id
+        description: adjust_id
+      - name: client_type
+        description: internally used client type
+      - name: installed_at
+        description: date of install
+      - name: outbound_call
+        description: flag to determine adid with at least 1 outbound call lasting > 10 seconds in the first 24 hours after registration
+      - name: lp_sessions
+        description: flag to determine adid with at least 4 Leanplum sessions lasting > 10 seconds in the first 24 hours after registration
+      - name: lp_sessions_outbound_call
+        description: adid which meets abive criteria (lp_sessions + outbound_call)
+      - name: ip_address
+        description: ip address
+
+  - name: ua_primary_users_by_reg_week
+    description: User's active days are captured by day along with week ending date (weeks designed by Registration Date)
+    columns:
+          - name: cohort_utc
+            description: When the user set was registered
+          - name: username
+            description: username
+          - name: user_set_id
+            description: user_set_id
+          - name: client_type
+            description: platform name
+          - name: report_date
+            description: End of the week
+          - name: active_date
+            description: user's activity date
+

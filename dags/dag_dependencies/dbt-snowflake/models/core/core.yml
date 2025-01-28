@@ -1,0 +1,526 @@
+version: 2
+
+sources:
+  - name: core
+    tables:
+      - name: burt_report
+        identifier: burt_report
+        columns:
+          - name: date
+            description: Date on which the impressions were delivered
+          - name: platform
+            description: client type
+          - name: app
+            description: Site on which the inventory was served. 'TextNow' or '2ndLine'.
+          - name: ad_tech_platform
+            description: Type of integration used for the partner, like GAM, SDK Bidding, Open Bidding etc.
+          - name: revenue_channel
+            description: Type of deal under which the inventory was sold, like Direct, Indirect, Affiliate.
+          - name: partner
+            description: The name of the network.
+          - name: payee
+            description: The name of the Payee. This is usually the Partner's name or Google.
+          - name: device_type
+            description: Type of device on which the inventory was served.
+          - name: ad_type
+            description: The type of Ad that was served, like Banner, Native, Video etc.
+          - name: ad_format
+            description: The format of the Ad served, like Text In-Stream Large, Home In-Stream Native etc.
+          - name: country
+            description: The country in which the impressions were served.
+          - name: creative_size
+            description: The size of the Ad delivered.
+          - name: dsp
+            description: The DSP, if available from the partner.
+          - name: line_item
+            description: The Placement associated with the Ad.
+          - name: advertiser
+            description: Advertiser name.
+          - name: buyer_name
+            description: Buyer name.
+          - name: inventory_type
+            description: Type of inventory. Eg Mobile Web, Desktop Web.
+          - name: ad_requests
+            description: The number of ad requests sent.
+          - name: impressions
+            description: The number of impressions served.
+          - name: net_revenue_usd
+            description: The net revenue earned from the inventory.
+          - name: gross_revenue_usd
+            description: The gross revenue earned from the inventory.
+          - name: pageviews
+            description: The total number of pageviews recorded, currently n/a
+          - name: sessions
+            description: The total number of sessions recorded, currently n/a
+          - name: unique_pageviews
+            description: The total number of unique pageviews recorded, currently n/a
+      - name: capabilities
+      - name: carrier_subscriptions
+      - name: carrier_subscription_devices
+      - name: data_devices
+      - name: data_devices_history
+      - name: disabled
+      - name: dq_checks
+      - name: dq_checks_inputs
+      - name: dq_checks_inputs_code
+      - name: dq_checks_details
+      - name: embrace_data
+      - name: embrace_metrics_log
+      - name: iap
+      - name: identities
+      - name: ip_geo_info
+      - name: ip_asn_update_latest
+      - name: ip_geo_info_latest
+      - name: ip_privacy_update
+      - name: messages
+      - name: plans
+      - name: server_sessions
+      - name: subscriptions
+      - name: subscriptions_history
+      - name: tn_requests_raw
+      - name: tn_requests2_raw
+      - name: user_attributes
+      - name: users
+
+models:
+  - name: dq_checks
+    description: Details for every Data Quality Check Ran
+    columns:
+      - name: check_id
+        description: Primary key/unique id for every DQ Checks run
+        tests:
+          - not_null
+          - unique
+      - name: executed_at
+        description: Timestamp at which the run was executed
+        tests:
+          - not_null
+      - name: checks_name
+        description: The overall name given to the Data Quality Checks. Multiple checks can be ran within one Checks run
+        tests:
+          - not_null
+      - name: checks_description
+        description: A short description about the Data Quality Checks
+      - name: table_name
+        description: The full name of the table being checked
+      - name: params
+        description: An optional set of parameters passed to the Data Quality Checks for the specific run
+      - name: run_error
+        description: The error raised (if any) for the specific DQ Checks run
+      - name: check_name
+        description: The name given to the specific check ran
+        tests:
+          - not_null
+      - name: check_description
+        description: A short description about the check
+      - name: column_name
+        description: The name of the column being checked, or if not a specific column, a column expr descriptor.
+      - name: status
+        description: Status of check run
+        tests:
+          - not_null
+          - accepted_values:
+              values: [ 'GREEN', 'YELLOW', 'RED', 'ERROR', 'RUN_AGAIN', 'UNKNOWN' ]
+      - name: alert_status
+        description: The type and status of the alert sent (if any).
+        tests:
+          - not_null
+          - accepted_values:
+              values: [ 'NO_ALERT_SENT', 'RED_ALERT_SENT', 'YELLOW_WARNING_SENT', 'ALERT_FAILED_TO_SEND', 'UNKNOWN' ]
+      - name: value
+        description: The value used in the check expressions to evaluate check success/failure
+        tests:
+          - not_null
+      - name: red_expr
+        description: The expression used in the check to evaluate red (failure) status
+      - name: yellow_expr
+        description: The expression used in the check to evaluate yellow (warning) status
+      - name: check_error
+        description: The error message or alert message if either a red or yellow error was raised for the specific check
+      - name: inserted_at
+        description: Timestamp at which this row was inserted into this table
+        tests:
+          - not_null
+
+  - name: dq_checks_inputs
+    description: Details about each input used in each Data Quality Checks run
+    columns:
+      - name: input_id
+        description: Primary key/unique id for each row in this table
+        tests:
+          - not_null
+          - unique
+      - name: check_id
+        description: check_id from dq_checks table
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dq_checks')
+              field: check_id
+      - name: source
+        description: The source system of the input data (i.e. Snowflake or S3)
+        tests:
+          - not_null
+      - name: name
+        description: The name given to the input
+        tests:
+          - not_null
+      - name: alias
+        description: The alias name for the input used in check code
+        tests:
+          - not_null
+      - name: index
+        description: The index (order) where this input is found in the list of inputs
+        tests:
+          - not_null
+      - name: inserted_at
+        description: Timestamp at which this row was inserted into this table
+        tests:
+          - not_null
+      - name: code
+        description: The code or SQL query used as source for inputs data
+        tests:
+          - not_null
+          - unique
+
+  - name: nps_combined_sources
+    description: view which combines the two sources of nps data (historical firebase data with current party_planner_realtime data).
+
+  - name: registrations_1
+    description: user registration data sourced from firehose and adjust registrations tables.
+    columns:
+      - name: created_at
+        constraints:
+          - type: not_null
+      - name: http_response_status
+      - name: error_code
+      - name: username
+        constraints:
+          - type: not_null
+      - name: client_type
+      - name: client_version
+      - name: country_code
+      - name: city_name
+      - name: latitude
+        description: (!PI)
+      - name: longitude
+        description: (!PI)
+      - name: idfa
+        description: ID for advertisers (iOS only) (!PI)
+      - name: idfv
+        description: ID for vendors (iOS only) (!PI)
+      - name: gaid
+        description: (!PI)
+      - name: android_id
+        description: Android ID (Android only) (!PI)
+      - name: mac_address
+        description: (!PI)
+      - name: mac_md5
+        description: (!PI)
+      - name: win_naid
+        description: Windows Store network adapter ID (!PI)
+      - name: win_adid
+        description: Windows advertising identifier (!PI)
+      - name: client_ip
+        description: (!PI)
+      - name: phone_num
+        description: (!PI)
+      - name: email
+        description: (!PI)
+      - name: fbid
+        description: (!PI)
+      - name: gender
+        description: (!PI)
+      - name: dob
+        description: Date of Birth (!PI)
+      - name: first_name
+        description: (!PI)
+      - name: last_name
+        description: (!PI)
+      - name: language
+      - name: timezone
+      - name: adid
+      - name: click_time
+      - name: tracker
+      - name: tracker_name
+      - name: is_organic
+      - name: device_type
+      - name: device_installed_at
+      - name: reattributed_at
+      - name: cohort_utc
+      - name: utm_source
+      - name: utm_medium
+      - name: utm_term
+      - name: utm_content
+      - name: utm_campaign
+      - name: integrity_sess_attested
+      - name: integrity_sess_exists
+      - name: integrity_sess_valid
+      - name: delayed_reg_state
+      - name: google_signin
+      - name: provider
+
+  - name: sessions
+    description: P1 client session start events. These sessions are sent directly from the client. There are some key differences between how Adjust/Leanplum tracks a session vs how the client tracks a session. Adjust and Leanplum tracks sessions on 30-minute intervals, meaning that multiple app opens within the same 30-minute interval will be counted as 1 session. On the other hand, client count each app open as 1 single session. So core.session should almost always count more sessions than Leanplum/Adjust, but not always. For example a new device running the TextNow app will generate a LP/Adjust session, but it will never generate a core.session even as long as there is no registration/login. The other key difference is metadata enrichment. core.sessions is streamed from the clients, and we had some problems in the past that forced us to remove a lot of the session metadata to ensure we are at least logging session records correctly. So core.sessions does not offer much other than the count. Adjust and Leanplum provide a lot more data along with each session record
+    columns:
+      - name: created_at
+        constraints:
+          - type: not_null
+      - name: event_source
+      - name: username
+        description: (!PI)
+      - name: client_type
+      - name: client_version
+      - name: country_code
+      - name: city_name
+      - name: latitude
+        description: (!PI)
+      - name: longitude
+        description: (!PI)
+      - name: client_ip
+        description: (!PI)
+      - name: phone_num
+        description: (!PI)
+      - name: adid
+        description: Adjust Device ID
+      - name: tracker
+      - name: installed_at
+      - name: imputed_timestamp
+      - name: data_source
+
+  - name: user_ip_master
+    description: aggregated user ip details processed daily
+    columns:
+      - name: date_utc
+        description: date of processed request from tn_requests
+      - name: username
+        description: username of request made from tn_requests
+      - name: client_ip
+        description: ip of processed request
+      - name: num_requests
+        description: number of processed requests from given ip/user on the day
+      - name: routes_used
+        description: list of routes hit from processed requests
+      - name: client_types_used
+        description: list of client_types used from processed requests
+      - name: latitude
+        description: latitude of ip location
+      - name: longitude
+        description: longitude of ip location
+      - name: country
+        description: country of ip location
+      - name: subdivision_1_iso_code
+        description: subdivision 1 code (state/province)
+      - name: asn
+        description: asn code
+      - name: asn_org
+        description: org code of processed asn
+      - name: hosting
+        description: boolean of hosting
+      - name: proxy
+        description: boolean of ip using proxy
+      - name: tor
+        description: boolean of ip using tor
+      - name: vpn
+        description: boolean of ip using vpn
+
+  - name: user_profiles_with_pi
+    description: The latest user profile data for all users
+    config:
+      contract:
+        enforced: true
+      on_schema_change: append_new_columns
+    columns:
+      - name: user_id_hex
+        description: auto-generated user unique identifier. Value is NULL if user has not logged in yet (i.e. is only found in registrations).
+        data_type: varchar
+      - name: first_username
+        data_type: varchar
+        constraints:
+          - type: not_null
+      - name: latest_username
+        data_type: varchar
+        constraints:
+          - type: not_null
+      - name: usernames
+        data_type: array
+        constraints:
+          - type: not_null
+      - name: user_set_id
+        data_type: varchar
+      - name: first_client_type
+        data_type: varchar
+      - name: latest_client_type
+        data_type: varchar
+      - name: client_types
+        data_type: array
+      - name: first_client_version
+        data_type: varchar
+      - name: latest_client_version
+        data_type: varchar
+      - name: adid
+        data_type: varchar
+      - name: first_google_analytics_unique_id
+        data_type: varchar
+      - name: latest_google_analytics_unique_id
+        data_type: varchar
+      - name: first_android_device_id
+        data_type: varchar
+      - name: latest_android_device_id
+        data_type: varchar
+      - name: first_idfa
+        data_type: varchar
+      - name: latest_idfa
+        data_type: varchar
+      - name: first_idfv
+        data_type: varchar
+      - name: latest_idfv
+        data_type: varchar
+      - name: first_gaid
+        data_type: varchar
+      - name: latest_gaid
+        data_type: varchar
+      - name: first_android_id
+        data_type: varchar
+      - name: latest_android_id
+        data_type: varchar
+      - name: first_adjust_id
+        data_type: varchar
+      - name: latest_adjust_id
+        data_type: varchar
+      - name: first_firebase_id
+        data_type: varchar
+      - name: latest_firebase_id
+        data_type: varchar
+      - name: first_facebook_id
+        data_type: varchar
+      - name: latest_facebook_id
+        data_type: varchar
+      - name: first_stripe_customer_id
+        data_type: varchar
+      - name: latest_stripe_customer_id
+        data_type: varchar
+      - name: identity_provider
+        data_type: varchar
+      - name: first_email
+        data_type: varchar
+      - name: latest_email
+        data_type: varchar
+      - name: email_verified
+        data_type: boolean
+      - name: first_first_name
+        data_type: varchar
+      - name: latest_first_name
+        data_type: varchar
+      - name: first_last_name
+        data_type: varchar
+      - name: latest_last_name
+        data_type: varchar
+      - name: latest_dob
+        data_type: date
+      - name: latest_gender
+        data_type: varchar
+      - name: latest_gender_source
+        data_type: varchar
+      - name: latest_ethnicity
+        data_type: varchar
+      - name: latest_ethnicity_source
+        data_type: varchar
+      - name: latest_age_range
+        data_type: varchar
+      - name: latest_age_range_source
+        data_type: varchar
+      - name: first_user_profile_location_data
+        data_type: object
+      - name: latest_user_profile_location_data
+        data_type: object
+      - name: first_area_code_phone_number_reserve_or_assign_location_data
+        data_type: object
+      - name: latest_area_code_phone_number_reserve_or_assign_location_data
+        data_type: object
+      - name: first_ip_phone_number_reserve_or_assign_location_data
+        data_type: object
+      - name: latest_ip_phone_number_reserve_or_assign_location_data
+        data_type: object
+      - name: reg_country_code
+        data_type: varchar
+      - name: reg_city
+        data_type: varchar
+      - name: reg_latitude
+        data_type: decimal(11, 9)
+      - name: reg_longitude
+        data_type: decimal(12, 9)
+      - name: use_cases
+        data_type: array
+      - name: other_use_cases
+        data_type: array
+      - name: user_interests
+        data_type: array
+      - name: latest_household_income
+        data_type: varchar
+      - name: latest_household_income_source
+        data_type: varchar
+      - name: first_paid_device_date
+        data_type: date
+      - name: first_untrusted_device_date
+        data_type: date
+      - name: expiry
+        data_type: date
+      - name: is_forward
+        data_type: BOOLEAN
+      - name: ringtone
+        data_type: varchar
+      - name: signature
+        data_type: varchar
+      - name: show_text_previews
+        data_type: boolean
+      - name: last_activity_ts
+        data_type: timestamp
+      - name: incentivized_share_date_twitter
+        data_type: date
+      - name: incentivized_share_date_fb
+        data_type: date
+      - name: phone_number_status
+        data_type: number(38, 0)
+      - name: phone_assigned_date
+        data_type: date
+      - name: phone_last_unassigned
+        data_type: date
+      - name: forwarding_status
+        data_type: number(38, 0)
+      - name: forwarding_expiry
+        data_type: date
+      - name: forwarding_number
+        data_type: varchar
+      - name: voicemail_status
+        data_type: number(38, 0)
+      - name: voicemail_timestamp
+        data_type: timestamp
+      - name: credits
+        data_type: number(38, 0)
+      - name: archive_mask
+        data_type: number(38, 0)
+      - name: is_employee
+        data_type: boolean
+      - name: purchases_timestamp
+        data_type: timestamp
+      - name: account_status
+        data_type: varchar
+      - name: first_disabled_at
+        data_type: timestamp
+      - name: first_disabled_reason
+        data_type: varchar
+      - name: mysql_shard
+        data_type: varchar
+      - name: mysql_updated_at
+        data_type: timestamp
+      - name: registered_at
+        data_type: timestamp
+      - name: user_set_created_at
+        data_type: timestamp
+      - name: first_user_profile_created_at
+        data_type: timestamp
+      - name: latest_user_profile_updated_at
+        data_type: timestamp
+      - name: updated_at
+        data_type: timestamp

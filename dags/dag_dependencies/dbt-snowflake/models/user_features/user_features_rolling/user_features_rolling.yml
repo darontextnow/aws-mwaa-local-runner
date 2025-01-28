@@ -1,0 +1,40 @@
+version: 2
+
+models:
+
+  - name: user_features_active_device_rolling
+    description: See upstream table for raw feature description. Features are aggregated in a rolling 28 day window
+
+  - name: user_features_activities_rolling
+    description: See upstream table for raw feature description. Features are aggregated in a rolling 28 day window
+
+  - name: user_features_age_range_rolling
+    description: See upstream table for raw feature description. Features are aggregated in a rolling 28 day window
+
+  - name: user_features_gender_rolling
+    description: See upstream table for raw feature description. Features are aggregated in a rolling 28 day window
+
+  - name: user_features_interest_rolling
+    description: See upstream table for raw feature description. Features are aggregated in a rolling 28 day window
+
+  - name: user_features_nps_rolling
+    description: See upstream table for raw feature description. Features are aggregated in a rolling 28 day window
+
+  - name: user_features_permissions_rolling
+    description: See upstream table for raw feature description. Features are aggregated in a rolling 28 day window
+
+  - name: user_features_phone_number_rolling
+    description: See upstream table for raw feature description. Features are aggregated in a rolling 28 day window
+
+  - name: user_features_profile_location_rolling
+    description: See upstream table for raw feature description. Features are aggregated in a rolling 28 day window
+
+  - name: user_features_ui_events_rolling
+    description: See upstream table for raw feature description. Features are aggregated in a rolling 28 day window
+
+  - name: user_features_use_cases_rolling
+    description: See upstream table for raw feature description. Features are aggregated in a rolling 28 day window
+
+  - name: user_features_user_segment_rolling
+    description: See upstream table for raw feature description. Features are aggregated in a rolling 28 day window
+

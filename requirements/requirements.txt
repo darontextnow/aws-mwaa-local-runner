@@ -1,4 +1,41 @@
---constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.10.3/constraints-3.11.txt"
+# requirements for LOCAL dev setup and testing.
+# Use with Python 3.11.9 which is the tested version by Daron
+# The requirements.txt file used in dev and prod MWAA envs is stored and updated via the infrastructure repository.
+# Package versioning should stay in sync with airflow published constraints as much as possible.
 
-apache-airflow-providers-snowflake==5.8.0
-apache-airflow-providers-mysql==5.7.3
+--constraint "constraints.txt"
+#--constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.10.3/constraints-3.11.txt"
+
+apache_airflow==2.10.3                    # this is the version of MWAA and Airflow we are running
+apache-airflow-providers-amazon           # version taken from constraints
+apache-airflow-providers-mysql            # version taken from constraints
+apache-airflow-providers-snowflake        # version taken from constraints
+apache-airflow-providers-google           # version taken from constraints
+apache-airflow-providers-cncf-kubernetes  # version taken from constraints
+
+# tndbo requirements not installed by airflow. Keep these in sync with versions in de_utils.
+mysqlclient          # version taken from constraints
+pymysql==1.1.1       # latest version at time of testing this package
+slack-sdk            # version taken from constraints (slack_sdk)
+
+# required by pandas s3 integration. Keep in sync with MWAA constraints and de_utils
+fsspec               # version taken from constraints
+s3fs                 # version taken from constraints
+
+# additional packages needed for specific DAG use
+google-play-scraper==1.2.7              # required by android_competitor_reviews_extract.py. latest version.
+prometheus_api_client==0.5.5            # required to retrieve prometheus metrics. latest when added here.
+braintree==4.31.0                       # required by braintree_extract.py. latest when added here.
+python-jose==3.3.0                      # required by app_store_..._reports.py. latest version
+networkx                                # required by dau_processing.py. Version taken from constraints.
+#google-ads                             # DAG deprecated?
+googleads==44.0.0                       # required by google_ad_manager_extract. Version was latest
+twilio==9.4.3                           # latest version at time of testing this package
+stripe==11.4.1                          # latest version at time of testing this package
+
+# next three have to install separately via startup.sh script as there are too many dependecy conflicts.
+airflow-dbt-python[snowflake,s3]==2.1.0 # latest version at time of testing this package
+dbt-core==1.8.8                         # latest version at time of testing this package
+#dbt-snowflake==1.9.0                   # latest version at time of testing this package
+
+

@@ -1,0 +1,87 @@
+version: 2
+
+models:
+  - name: historical_registrations
+    description: Captures historical registrations from active days of user sets.
+    columns:
+      - name: cohort_utc
+        description: date of install.
+      - name: w2pu_flag
+        description: Week2 Primary users.
+      - name: registrations
+        description: Total number of registrations for the user set.
+
+  - name: actuals
+    description: Captures actual active days for user sets based on specific conditions.
+    columns:
+      - name: cohort_year
+        description: year of install.
+      - name: cohort_utc
+        description: date of install.
+      - name: fiscal_day
+        description: The fiscal day.
+      - name: fiscal_month
+        description: The fiscal month.
+      - name: w2pu_flag
+        description: Week2 Primary users
+      - name: acquired_in_month
+        description: Boolean indicating if the user set was acquired in the month.
+      - name: actual_active_days
+        description: Total number of actual active days.
+
+  - name: actuals_vs_budget
+    description: Captures projected active days with actual active days against the budget.
+    columns:
+      - name: cohort_year
+        description: year of install
+      - name: cohort_utc
+        description: date of install
+      - name: fiscal_day
+        description: The fiscal day.
+      - name: fiscal_month
+        description: The fiscal month.
+      - name: w2pu_flag
+        description: Week2 Primary users.
+      - name: acquired_in_month
+        description: Boolean indicating if the user set was acquired in the month.
+      - name: budget
+        description: Projected active days as per the budget.
+      - name: actual_active_days
+        description: Actual active days recorded.
+
+  - name: budget_existing_users
+    description: Captures budget for existing users based on historical registrations and daily retention rates.
+    columns:
+      - name: cohort_year
+        description: year of install
+      - name: cohort_utc
+        description: date of install
+      - name: fiscal_day
+        description: The fiscal day.
+      - name: fiscal_month
+        description: The fiscal month.
+      - name: w2pu_flag
+        description: Week2 Primary users
+      - name: acquired_in_month
+        description: Boolean indicating if the user set was acquired in the month.
+      - name: projected_active_days
+        description: Projected active days for the cohort in the fiscal month.
+
+  - name: budget_new_users
+    description: Captures budget for new users based on UA inputs and daily retention rates.
+    columns:
+      - name: cohort_year
+        description: year of install
+      - name: cohort_utc
+        description: date of install
+      - name: fiscal_day
+        description: The fiscal day.
+      - name: fiscal_month
+        description: The fiscal month.
+      - name: w2pu_flag
+        description: Week2 Primary users.
+      - name: acquired_in_month
+        description: Boolean indicating if the user set was acquired in the month.
+      - name: projected_active_days
+        description: Projected active days for the cohort in the fiscal month.
+

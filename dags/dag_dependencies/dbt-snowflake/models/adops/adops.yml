@@ -1,0 +1,29 @@
+version: 2
+
+
+models:
+  - name: report
+    description: This table under adops schema is used to capture ad revenue and impressions from Burt Source.
+    columns:
+      - name: date
+        description: Date on which the impressions were delivered
+      - name: platform
+        description: client type
+      - name: app
+        description: Site on which the inventory was served. 'TextNow' or '2ndLine'.
+      - name: custom_3
+        description: Ad tech platform, Type of integration used for the partner, like GAM, SDK Bidding, Open Bidding.
+      - name: custom_4
+        description: Revenue channel, Type of deal under which the inventory was sold, like Direct, Indirect, Affiliate.
+      - name: network
+        description: The name of the network.
+      - name: ad_type
+        description: The type of Ad that was served, like Banner, Native, Video etc.
+      - name: ad_format
+        description: The format of the Ad served, like Text In-Stream Large, Home In-Stream Native etc.
+      - name: country
+        description: The country in which the impressions were served.
+      - name: impressions
+        description: The number of impressions served.
+      - name: revenue
+        description: The net revenue earned from the inventory.

@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: metrics_daily_device_crash_anr
+    description: This model aggregates device level session metrics, ANR metrics, crash metrics from embrace source.
+    columns:
+    - name: date_utc
+      description: date.
+    - name: client_type
+      description: client type.
+    - name: app_version
+      description: app version
+    - name: device_model
+      description: name of the device
+    - name: os_version
+      description: os version
+    - name: manufacturer
+      description: manufacturer
+    - name: total_users
+      description: The total number of unique users for the given group.
+    - name: total_sessions
+      description: The total number of sessions for the given group.
+    - name: total_anr_sessions
+      description: The total number of sessions affected by ANR events.
+    - name: anr_rate
+      description: The ratio of total ANR sessions to total sessions.
+    - name: anr_free_session_rate
+      description: The rate of ANR-free sessions, calculated as 1 minus the ANR rate.
+    - name: total_anr_users
+      description: The total number of unique users affected by at least one ANR event.
+    - name: total_anr_free_users
+      description: The total number of unique users who were not affected by any ANR events.
+    - name: total_crash_sessions
+      description: The total number of sessions affected by crash events.
+    - name: crash_rate
+      description: The ratio of total crash sessions to total sessions.
+    - name: crash_free_session_rate
+      description: The rate of crash-free sessions, calculated as 1 minus the crash rate.
+    - name: total_crash_users
+      description: The total number of unique users affected by at least one crash event
+    - name: total_crash_free_users
+      description: The total number of unique users who were not affected by any crash events.
+    - name: total_crash_anr_sessions
+      description: The total number of sessions affected by both crash and ANR events (combined metric).
+    - name: crash_anr_rate
+      description: The rate of sessions affected by crash and ANR events to total sessions.
+    - name: crash_anr_free_session_rate
+      description: The rate of sessions free from both crash and ANR events, calculated as 1 minus the crash_anr_rate.
+    - name: total_crash_anr_users
+      description: The total number of unique users affected by at least one crash and ANR event.
+    - name: total_crash_anr_free_users
+      description: The total number of unique users who were not affected by any crash and ANR events.

@@ -1,0 +1,190 @@
+version: 2
+
+models:
+  - name: user_profile_use_cases_updates
+    description: The use cases updates of users
+    columns:
+      - name: username
+        description: username
+      - name: user_id_hex
+        description: user identifier
+      - name: date_utc
+        description: the date at which user profile was updated
+      - name: updated_at
+        description: the timestamp at which use case was updated
+      - name: use_case
+        description: use case for which a user is tagged to
+        tests:
+          - not_null
+
+  - name: user_profile_interests_updates
+    description: The interests updates of users
+    columns:
+      - name: username
+        description: username
+      - name: user_id_hex
+        description: user identifier
+      - name: date_utc
+        description: the date at which user profile was updated
+      - name: updated_at
+        description: the timestamp at which interest was updated
+      - name: interest
+        description: interest for which a user is tagged to
+        tests:
+          - not_null
+
+  - name: user_profile_location_updates
+    description: The location updates of users from different sources
+    columns:
+      - name: username
+        description: username
+      - name: user_id_hex
+        description: user identifier
+      - name: date_utc
+        description: the date at which user profile was updated
+      - name: updated_at
+        description: the timestamp at which country code was updated
+      - name: location_source
+        description: location source from which country code was generated
+      - name: continent_code
+        description: continent code for which a user is tagged to
+      - name: country_code
+        description: country code for which a user is tagged to
+      - name: state_code
+        description: state code for which a user is tagged to
+      - name: city
+        description: city for which a user is tagged to
+      - name: zip_code
+        description: zip code for which a user is tagged to
+      - name: area_code
+        description: area code for which a user is tagged to
+
+  - name: user_profile_personal_info_updates
+    description: The personal information updates of users
+    columns:
+      - name: username
+        description: username
+      - name: user_id_hex
+        description: user identifier
+      - name: date_utc
+        description: the date at which user profile was updated
+      - name: updated_at
+        description: the timestamp at which country code was updated
+      - name: age_range
+        description: age range for which a user is tagged to
+      - name: gender
+        description: gender for which a user is tagged to
+
+  - name: user_profile_last_use_cases
+    description: Most recent use cases for a user
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - updated_at
+            - username
+    columns:
+      - name: username
+        description: username
+      - name: date_utc
+        description: the date at which use cases were last updated
+      - name: updated_at
+        description: the timestamp at which use cases were last updated
+      - name: use_cases
+        description: most recent use cases for which a user is tagged to
+        tests:
+          - not_null
+
+  - name: user_profile_last_interests
+    description: Most recent interests for a user
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - updated_at
+            - username
+    columns:
+      - name: username
+        description: username
+      - name: date_utc
+        description: the date at which interests were last updated
+      - name: updated_at
+        description: the timestamp at which interests were last updated
+      - name: interests
+        description: most recent interests for which a user is tagged to
+        tests:
+          - not_null
+
+  - name: user_profile_last_location
+    description: Most recent location in different sources for a user
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - updated_at
+            - username
+    columns:
+      - name: username
+        description: username
+      - name: date_utc
+        description: the date at which country code was last updated 
+      - name: updated_at
+        description: the timestamp at which country code was last updated
+      - name: location_source
+        description: location source from which country code was generated
+      - name: continent_code
+        description: most recent continent code for which a user is tagged to
+      - name: country_code
+        description: most recent country code for which a user is tagged to
+      - name: state_code
+        description: most recent state code for which a user is tagged to
+      - name: city
+        description: most recent city for which a user is tagged to
+      - name: zip_code
+        description: most recent zip code for which a user is tagged to
+      - name: area_code
+        description: most recent area code for which a user is tagged to
+
+  - name: user_profile_last_personal_info
+    description: Most recent personal information for a user
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - updated_at
+            - username
+    columns:
+      - name: username
+        description: username
+      - name: date_utc
+        description: the date at which interests were last updated
+      - name: updated_at
+        description: the timestamp at which interests were last updated
+      - name: age_range
+        description: most recent age range for which a user is tagged to
+      - name: gender
+        description: most recent gender for which a user is tagged to
+
+  - name: user_profile_user_info
+    description: Most recent information for a user
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - username
+    columns:
+      - name: username
+        description: username
+      - name: age_range
+        description: most recent age range for which a user is tagged to
+      - name: gender
+        description: most recent gender for which a user is tagged to
+      - name: use_cases
+        description: most recent use cases for which a user is tagged to
+      - name: interests
+        description: most recent interests for which a user is tagged to
+      - name: continent_code
+        description: most recent continent code for which a user is tagged to based on user profile
+      - name: country_code
+        description: most recent country code for which a user is tagged to based on user profile
+      - name: state_code
+        description: most recent state code for which a user is tagged to based on user profile
+      - name: city
+        description: most recent city for which a user is tagged to based on user profile
+      - name: zip_code
+        description: most recent zip code for which a user is tagged to based on user profile

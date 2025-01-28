@@ -1,0 +1,412 @@
+version: 2
+
+models:
+  - name: registrations_2
+    description: User registration records. One hex global user ID should make up one unique row in the table.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - USER_ID_HEX
+    columns:
+      - name: REGISTERED_AT
+        description: timestamp (UTC) at which the hex global user ID registered
+      - name: LOCAL_REGISTERED_AT
+        description: timezone adjusted timestamp at which the counterpart hex global user ID registered, NULL if no timezone info available
+      - name: USER_ID_HEX
+        description: TextNow's HEX based global user ID
+      - name: USERNAME
+        description: username of the registered user account
+      - name: REGISTRATION_PROVIDER
+        description: the route through which the user account is registered, can be EMAIL, GOOGLE, FACEBOOK etc.
+      - name: COUNTRY_CODE
+        description: two-lettered country code
+
+  - name: user_account_profile_updates
+    description: Updates made by users to their profiles. Each row in this table represents one change to one or more attributes in one user profile. Attributes that remain the same will show up as NULLs in the change log.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - USER_ID_HEX
+            - CREATED_AT
+    columns:
+      - name: USER_ID_HEX
+        description: TextNow's HEX based global user ID
+      - name: DATE_UTC
+        description: date (UTC) on which the profile change is made
+      - name: CREATED_AT
+        description: timestamp (UTC) at which the profile change is made
+      - name: GENDER
+        description: gender
+      - name: AGE_RANGE
+        description: age range
+      - name: CONTINENT_CODE
+        description: continent code
+      - name: COUNTRY_CODE
+        description: two-lettered country code
+      - name: STATE_CODE
+        description: state code
+      - name: ZIP_CODE
+        description: zip code
+      - name: CITY
+        description: city
+      - name: AREA_CODE
+        description: phone area code
+      - name: LATITUDE
+        description: latitude
+      - name: LONGITUDE
+        description: longitude
+      - name: RECOVERY_NUMBER
+        description: recovery number
+      - name: BUSINESS_NAME
+        description: name of the business
+      - name: USE_CASES
+        description: comma separated list of use cases designated to TextNow by our users
+      - name: OTHER_USE_CASES
+        description: free string of custom use cases designated to TextNow by our users
+      - name: INTERESTS
+        description: comma separated list of interested of our users
+
+  - name: user_account_profile
+    description: Snapshot of the latest attributes on each user's profile. One user represents one unique row in this table.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - USER_ID_HEX
+    columns:
+      - name: USER_ID_HEX
+        description: TextNow's HEX based global user ID
+      - name: CREATED_AT
+        description: the latest timestamp (UTC) at which the profile change is made
+      - name: GENDER
+        description: gender
+      - name: AGE_RANGE
+        description: age range
+      - name: CONTINENT_CODE
+        description: continent code
+      - name: COUNTRY_CODE
+        description: two-lettered country code
+      - name: STATE_CODE
+        description: state code
+      - name: ZIP_CODE
+        description: zip code
+      - name: CITY
+        description: city
+      - name: AREA_CODE
+        description: phone area code
+      - name: LATITUDE
+        description: latitude
+      - name: LONGITUDE
+        description: longitude
+      - name: RECOVERY_NUMBER
+        description: recovery number
+      - name: BUSINESS_NAME
+        description: name of the business
+      - name: USE_CASES
+        description: comma separated list of use cases designated to TextNow by our users
+      - name: OTHER_USE_CASES
+        description: free string of custom use cases designated to TextNow by our users
+      - name: INTERESTS
+        description: comma separated list of interested of our users
+
+  - name: device_installs
+    description: All device installations/reactivations as reported by our attribution/data partners. At the moment we only have Adjust. Note that each device can have only 1 FIRST_INSTALL but multiple REATTRIBUTIONS afterwards.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - EXT_DEVICE_ID
+            - EXT_DEVICE_ID_SOURCE
+            - CLIENT_TYPE
+            - INSTALLED_AT
+    columns:
+      - name: EXT_DEVICE_ID
+        description: device ID supplied by external partner
+      - name: CLIENT_TYPE
+        description: internally used client type identifiers
+      - name: CLIENT_VERSION
+        description: version of the app at installation
+      - name: EXT_DEVICE_ID_SOURCE
+        description: external partner that spplied the external device ID
+      - name: INSTALL_TYPE
+        description: type of install, "FIRST_INSTALL" or "REATTRIBUTION"
+        tests:
+          - accepted_values:
+              values: ['FIRST_INSTALL', 'REATTRIBUTION']
+      - name: INSTALLED_AT
+        description: timestamp (UTC) at which install occurred
+      - name: LOCAL_INSTALLED_AT
+        description: timezone adjusted timestamp at which install occurred, NULL if no timezone supplied
+      - name: CLICKED_AT
+        description: timestamp (UTC) at which the click that led to the install occurred
+      - name: TRACKER
+        description: user acquistion tracker identifying the UA channel from which the device came
+      - name: STORE
+        description: target store of click
+        tests:
+          - accepted_values:
+              values: ['itunes', 'google', 'amazon', 'wstore', 'wphone']
+      - name: CONNECTION_TYPE
+        description: internet connection type
+      - name: COUNTRY_CODE
+        description: two-lettered country code
+
+  - name: devices
+    description: All devices known to TextNow and all their ad/vendor identifiers along with identifiers from external partners. Note that this is equivalent to all "FIRST_INSTALLS" from the installs model.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - EXT_DEVICE_ID
+            - EXT_DEVICE_ID_SOURCE
+            - CLIENT_TYPE
+    columns:
+      - name: EXT_DEVICE_ID
+        description: device ID supplied by external partner
+      - name: MOBILE_AD_ID
+        description: GPS_ADID or IDFA
+      - name: MOBILE_VENDOR_ID
+        description: ANDROID_ID or IDFV
+      - name: EXT_DEVICE_ID_SOURCE
+        description: external partner that spplied the external device ID
+      - name: CLIENT_TYPE
+        description: internally used client type identifiers
+      - name: DEVICE_TYPE
+        description: type of device, e.g. phone, tablet, etc.
+      - name: DEVICE_NAME
+        description: name (model number) of device
+
+  - name: device_install_scores
+    description: Scores associated with each device installation. Note that each device installation can get scored by multiple sources. If a device doesn't have a score in this table, assume it to be 0.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - EXT_DEVICE_ID
+            - EXT_DEVICE_ID_SOURCE
+            - SCORE_SOURCE
+    columns:
+      - name: CREATED_AT
+        description: timestamp at which the score is created for a given device installation
+      - name: EXT_DEVICE_ID
+        description: device ID supplied by external partner
+      - name: EXT_DEVICE_ID_SOURCE
+        description: external partner that spplied the external device ID
+      - name: TRUST_SCORE
+        description: trust score of a device installation, range might differ based on source, usually between 0 and 1
+      - name: SCORE_SOURCE
+        description: source that contributed the trust score
+
+  - name: crash_anr_daily
+    description: All devices known to TextNow and all their ad/vendor identifiers along with identifiers from external partners. Note that this is equivalent to all "FIRST_INSTALLS" from the installs model.
+    columns:
+      - name: DATE_UTC
+        description: device ID supplied by external partner
+      - name: CLIENT_TYPE
+        description: GPS_ADID or IDFA
+      - name: SEGMENT
+        description: ANDROID_ID or IDFV
+      - name: APP_VERSION
+        description: external partner that spplied the external device ID
+      - name: OS_VERSION
+        description: internally used client type identifiers
+      - name: CNT_USERS
+        description: type of device, e.g. phone, tablet, etc.
+      - name: TTL_SESSIONS
+        description: name (model number) of device
+      - name: TTL_ANR_SESSIONS
+        description: ANDROID_ID or IDFV
+      - name: AVG_ANR_RATE
+        description: external partner that spplied the external device ID
+      - name: ANR_FREE_SESSION_RATE
+        description: internally used client type identifiers
+      - name: CNT_ANR_USERS
+        description: type of device, e.g. phone, tablet, etc.
+      - name: CNT_ANR_FREE_USERS
+        description: name (model number) of device
+      - name: TTL_CRASH_SESSIONS
+        description: type of device, e.g. phone, tablet, etc.
+      - name: AVG_CRASH_RATE
+        description: name (model number) of device
+      - name: CRASH_FREE_SESSION_RATE
+        description: ANDROID_ID or IDFV
+      - name: CNT_CRASH_USERS
+        description: external partner that spplied the external device ID
+      - name: CNT_CRASH_FREE_USERS
+        description: internally used client type identifiers
+      - name: TTL_CRASH_ANR_SESSIONS
+        description: type of device, e.g. phone, tablet, etc.
+      - name: AVG_CRASH_ANR_SESSIONS_RATE
+        description: name (model number) of device
+      - name: AVG_CRASH_ANR_FREE_SESSIONS_RATE
+        description: internally used client type identifiers
+      - name: TTL_CRASH_ANR_USERS
+        description: type of device, e.g. phone, tablet, etc.
+      - name: CNT_CRASH_ANR_FREE_USERS
+        description: name (model number) of device
+
+  - name: login_requests_errors_daily
+    description: All devices known to TextNow and all their ad/vendor identifiers along with identifiers from external partners. Note that this is equivalent to all "FIRST_INSTALLS" from the installs model.
+    columns:
+      - name: DATE_UTC
+        description: device ID supplied by external partner
+      - name: COUNTRY
+        description: GPS_ADID or IDFA
+      - name: USERNAME_CHECK
+        description: ANDROID_ID or IDFV
+      - name: SEGMENT
+        description: external partner that spplied the external device ID
+      - name: PROVIDER_TYPE
+        description: internally used client type identifiers
+      - name: CLIENT_PLATFORM
+        description: type of device, e.g. phone, tablet, etc.
+      - name: ERROR_CODE
+        description: type of device, e.g. phone, tablet, etc.
+      - name: TTL_LOGINS
+        description: type of device, e.g. phone, tablet, etc.
+      - name: TTL_OK_LOGINS
+        description: type of device, e.g. phone, tablet, etc.
+      - name: TTL_ERROR_LOGINS
+        description: type of device, e.g. phone, tablet, etc.
+      - name: PCT_SUCCESS_LOGIN
+        description: type of device, e.g. phone, tablet, etc.
+      - name: PCT_ERROR_LOGIN
+        description: type of device, e.g. phone, tablet, etc.
+      - name: TTL_USERS
+        description: type of device, e.g. phone, tablet, etc.
+
+  - name: call_details_agg_daily
+    description: All devices known to TextNow and all their ad/vendor identifiers along with identifiers from external partners. Note that this is equivalent to all "FIRST_INSTALLS" from the installs model.
+    columns:
+      - name: DATE_UTC
+        description: device ID supplied by external partner
+      - name: CLIENT_TYPE
+        description: GPS_ADID or IDFA
+      - name: SEGMENT
+        description: ANDROID_ID or IDFV
+      - name: APP_VERSION
+        description: external partner that spplied the external device ID
+      - name: CALL_DIRECTION
+        description: internally used client type identifiers
+      - name: CNT_USERS
+        description: type of device, e.g. phone, tablet, etc.
+      - name: AVG_CALL_RATING
+        description: type of device, e.g. phone, tablet, etc.
+      - name: COUNT_ZERO_OR_NOT_ESTABLISHED
+        description: type of device, e.g. phone, tablet, etc.
+      - name: COUNT_NOT_ZERO
+        description: type of device, e.g. phone, tablet, etc.
+      - name: COUNT_ELIGILBE_FOR_SURVEY
+        description: device ID supplied by external partner
+      - name: COUNT_CALL_STARTED
+        description: GPS_ADID or IDFA
+      - name: AVG_MOS
+        description: ANDROID_ID or IDFV
+      - name: COUNT_BAD_MOS
+        description: external partner that spplied the external device ID
+      - name: AVG_CALL_DURATION
+        description: internally used client type identifiers
+      - name: AVG_MAX_JITTER
+        description: type of device, e.g. phone, tablet, etc.
+      - name: AVG_PACKET_LOSS
+        description: type of device, e.g. phone, tablet, etc.
+      - name: AVG_ANY_CALL_DURATION
+        description: type of device, e.g. phone, tablet, etc.
+      - name: COUNT_NO_SENT_AUDIO
+        description: type of device, e.g. phone, tablet, etc.
+      - name: COUNT_NO_RECEIVED_AUDIO
+        description: type of device, e.g. phone, tablet, etc.
+      - name: COUNT_SHORT_CALLS
+        description: type of device, e.g. phone, tablet, etc.
+
+  - name: msg_delivery_agg_daily
+    description: All devices known to TextNow and all their ad/vendor identifiers along with identifiers from external partners. Note that this is equivalent to all "FIRST_INSTALLS" from the installs model.
+    columns:
+      - name: DATE_UTC
+        description: device ID supplied by external partner
+      - name: USER_SEGMENT
+        description: GPS_ADID or IDFA
+      - name: CLIENT_TYPE
+        description: ANDROID_ID or IDFV
+      - name: CLIENT_VERSION
+        description: external partner that spplied the external device ID
+      - name: MESSAGE_TYPE
+        description: internally used client type identifiers
+      - name: TTL_USERS
+        description: type of device, e.g. phone, tablet, etc.
+      - name: TTL_MSG_NO_ERROR
+        description: type of device, e.g. phone, tablet, etc.
+      - name: TTL_MSG_ERROR
+        description: type of device, e.g. phone, tablet, etc.
+      - name: TTL_MSGS
+        description: type of device, e.g. phone, tablet, etc.
+
+  - name: call_out_ringtime
+    description: All devices known to TextNow and all their ad/vendor identifiers along with identifiers from external partners. Note that this is equivalent to all "FIRST_INSTALLS" from the installs model.
+    columns:
+      - name: DATE_UTC
+        description: device ID supplied by external partner
+      - name: CLIENT_TYPE
+        description: GPS_ADID or IDFA
+      - name: SEGMENT
+        description: ANDROID_ID or IDFV
+      - name: OS_VERSION
+        description: external partner that spplied the external device ID
+      - name: APPLICATION_VERSION
+        description: internally used client type identifiers
+      - name: COUNTRY_CODE
+        description: type of device, e.g. phone, tablet, etc.
+      - name: UNIQ_USER_COUNT
+        description: type of device, e.g. phone, tablet, etc.
+      - name: TTL_CALL_COUNT
+        description: type of device, e.g. phone, tablet, etc.
+      - name: TTL_TIME_TO_RING
+        description: type of device, e.g. phone, tablet, etc.
+      - name: PERCENT_TRYING
+        description: device ID supplied by external partner
+      - name: TTL_CALLS_RING_SLA
+        description: GPS_ADID or IDFA
+      - name: PCT_RING_SLA
+        description: ANDROID_ID or IDFV
+      - name: TTL_CALLS_MISSED_SLA
+        description: external partner that spplied the external device ID
+
+  - name: call_inc_invite_push
+    description: All devices known to TextNow and all their ad/vendor identifiers along with identifiers from external partners. Note that this is equivalent to all "FIRST_INSTALLS" from the installs model.
+    columns:
+      - name: DATE_UTC
+        description: device ID supplied by external partner
+      - name: CLIENT_TYPE
+        description: GPS_ADID or IDFA
+      - name: SEGMENT
+        description: ANDROID_ID or IDFV
+      - name: OS_VERSION
+        description: external partner that spplied the external device ID
+      - name: APPLICATION_VERSION
+        description: internally used client type identifiers
+      - name: COUNTRY_CODE
+        description: type of device, e.g. phone, tablet, etc.
+      - name: USER_COUNT
+        description: type of device, e.g. phone, tablet, etc.
+      - name: TTL_CALL_COUNT
+        description: type of device, e.g. phone, tablet, etc.
+      - name: TTL_INVITE_AFTER_PUSH
+        description: type of device, e.g. phone, tablet, etc.
+      - name: PCT_INVITE_AFTER_PUSH
+        description: device ID supplied by external partner
+      - name: TTL_ACCEPTED_AFTER_PUSH
+        description: GPS_ADID or IDFA
+      - name: PCT_ACCEPT_AFTER_PUSH
+        description: ANDROID_ID or IDFV
+      - name: AVG_TIME_PUSH_TO_INVITE
+        description: external partner that spplied the external device ID
+
+  - name: low_memory_devices
+    description: Captures all low memory devices less 2GB memory.
+    columns:
+      - name: date_utc
+        description: Date
+      - name: user_id_hex
+        description: TextNow's HEX based global user ID
+      - name: product_name
+        description: device name
+      - name: client_type
+        description: Client Type (TN_IOS_FREE, TN_ANDROID, TN_WEB)
+      - name: total_count
+        description: Aggregated counts

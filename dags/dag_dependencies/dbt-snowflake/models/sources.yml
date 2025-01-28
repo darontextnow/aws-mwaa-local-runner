@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: firehose
+    schema: firehose
+    tables:
+      - name: registrations
+      - name: npstracker
+
+  - name: loadr
+    schema: core
+    tables:
+      - name: messages
+      - name: oncallend_callbacks
+
+  - name: singular
+    schema: singular
+    tables:
+      - name: marketing_data

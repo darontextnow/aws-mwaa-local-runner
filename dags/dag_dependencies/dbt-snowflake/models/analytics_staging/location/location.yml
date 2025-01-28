@@ -1,0 +1,125 @@
+version: 2
+
+models:
+
+  - name: location_user_updates
+    description: Latest location data reported in User Information Update PP Table
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - username
+            - location_source
+    columns:
+      - name: username
+        description: username
+      - name: location_source
+        description: The source of the location data
+        tests:
+          - accepted_values:
+              values: ['COORDINATES_PHONE_NUMBER_RESERVE_OR_ASSIGN', 'IP_PHONE_NUMBER_RESERVE_OR_ASSIGN', 'USER_PROFILE', 'AREA_CODE_PHONE_NUMBER_RESERVE_OR_ASSIGN']
+      - name: surrogate_key
+        description: An unique row identifer - a combination of username - location_source
+        tests:
+          - not_null
+          - unique
+      - name: area_code
+        description: Area code reported
+      - name: continent_code
+        description: Continent
+      - name: country_code
+        description: Country Code
+      - name: state_code
+        description: State Code
+      - name: city
+        description: City
+      - name: zip_code
+        description: Zip Code
+      - name: latitude
+        description: latitude
+      - name: longitude
+        description: longitude
+      - name: updated_at
+        description: The timestamp of this record
+
+
+  - name: location_user_location
+    description: Summarized user location data
+    columns:
+      - name: username
+        description: username
+        tests:
+          - unique
+      - name: country_code
+        description: Country Code
+      - name: country_code_source
+        description: location source for Country Code
+      - name: country_code_update_at
+        description: Last updated timestamp of Country Code
+      - name: state_code
+        description: State Code
+      - name: state_code_source
+        description: location source for State Code
+      - name: state_code_update_at
+        description: Last updated timestamp of State Code
+      - name: city
+        description: City
+      - name: city_source
+        description: location source for City
+      - name: city_update_at
+        description: Last updated timestamp of City
+      - name: zip_code
+        description: Zip Code
+      - name: zip_code_source
+        description: location source for Zip Code
+      - name: zip_code_update_at
+        description: Last updated timestamp of Zip Code
+      - name: lonlag_coords
+        description: longitude / latitude coordinates
+      - name: lonlag_coords_source
+        description: location source for longitude / latitude coordinates
+      - name: lonlag_coords_update_at
+        description: Last updated timestamp of longitude / latitude coordinates
+
+  - name: location_dma_regions
+    description: US county and DMA geo regions (Updated to 2020)
+    columns:
+      - name: geoid
+        description: 5 letter Geo ID for county that consists of State FIPS and County FIPS
+        tests:
+          - unique
+      - name: state_name
+      - name: county_name
+      - name: tvdma
+        description: Nielson DMA (compiled from https://data.world/alexpatton/us-counties-by-tv-dma)
+      - name: geometry
+        description: boundary shape of the county from US Census Bureau 2020 (tl_2020_us_county)
+
+  - name: location_timezone_boundary_h3
+    description: US timezone boundaries keyed by H3 cell for quick lookups
+    columns:
+      - name: tzid
+        description: Timezone ID
+      - name: h3_res2_cell
+        description: H3 cell id at resolution 2
+        tests:
+          - unique
+      - name: tzid_count_in_cell
+        description: Number of tzid in the same cell
+      - name: geometry
+        description: boundary shape of the timezone from US Census Bureau in H3 cell
+
+  - name: location_zcta5_boundary_h3
+    description: US ZCTA boundaries keyed by H3 cell for quick lookups
+    columns:
+      - name: zcta5
+        description: 5 digit ZCTA
+        tests:
+          - unique
+      - name: h3_res65_cell
+        description: H3 cell id at resolution 6
+        tests:
+          - unique
+      - name: zcta_count_in_cell
+        description: Number of ZCTAs in the same cell
+      - name: geometry
+        description: boundary shape of the ZCTA from US Census Bureau in H3 cell

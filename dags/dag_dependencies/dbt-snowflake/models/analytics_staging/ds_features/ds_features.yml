@@ -1,0 +1,26 @@
+version: 2
+
+models:
+    - name: applifecycle_events
+      description: Contains events information along with next event details (per user per device) used by DS model for features on app sessions information
+      columns:
+        - name: username
+        - name: instance_id
+        - name: event_time
+        - name: date_utc
+        - name: created_at
+        - name: event_id
+        - name: platform
+        - name: brand
+        - name: idfv
+        - name: android_id
+        - name: adjust_id
+        - name: user_agent
+        - name: client_version
+        - name: client_country_code
+        - name: language_code
+        - name: tz_code
+        - name: ip_address
+        - name: event
+        - name: next_event_time
+        - name: next_event

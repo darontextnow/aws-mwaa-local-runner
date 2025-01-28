@@ -1,0 +1,457 @@
+version: 2
+
+models:
+
+  - name: user_features_app_view_displayed
+    description: deprecated in favor of user_features_ui_events_rolling
+
+  - name: user_features_drawer_tapped
+    description: deprecated in favor of user_features_ui_events_rolling
+
+  - name: user_features_active_device
+    description: device activities for user features - used as the base table for counting daily actives
+    columns:
+      - name: date_utc
+        description: date
+      - name: username
+        description: username
+      - name: active_android
+        description: 1 if user is active on Android on the day, else 0
+      - name: active_sec_android
+        description: 1 if user is active on second line Android on the day, else 0
+      - name: active_ios
+        description: 1 if user is active on iOS on the day, else 0
+      - name: android_adid
+        description: adid of Android devices being used on the day if exists, else null
+      - name: android_device_type
+        description: device type of Android devices being used on the day if exists, else null
+      - name: android_device_name
+        description: device name of Android devices being used on the day if exists, else null
+      - name: sec_android_adid
+        description: adid of second line Android devices being used on the day if exists, else null
+      - name: sec_android_device_type
+        description: device type of second line Android devices being used on the day if exists, else null
+      - name: sec_android_device_name
+        description: device name of second line Android devices being used on the day if exists, else null
+      - name: ios_adid
+        description: adid of iOS devices being used on the day if exists, else null
+      - name: ios_device_type
+        description: device type of iOS devices being used on the day if exists, else null
+      - name: ios_device_name
+        description: device name of iOS devices being used on the day if exists, else null
+
+  - name: user_features_activities
+    columns:
+      - name: date_utc
+        description: date
+      - name: username
+        description: username
+      - name: ad_impressions
+        description: number of ad impressions on the day
+      - name: mms_messages
+        description: number of MMS being sent out on the day
+      - name: sms_messages
+        description: number of SMS being sent out on the day
+      - name: total_outgoing_calls
+        description: number of outgoing calls being made on the day
+      - name: total_outgoing_call_duration
+        description: duration of outgoing calls on the day
+      - name: total_outgoing_unique_calling_contacts
+        description: number of unique outgoing contacts on the day
+      - name: total_outgoing_free_calls
+        description: number of free outgoing calls on the day
+      - name: total_outgoing_paid_calls
+        description: number of paid outgoing calls on the day
+      - name: total_outgoing_domestic_calls
+        description: number of domestic outgoing calls on the day
+      - name: total_outgoing_international_calls
+        description: number of international outgoing calls on the day
+      - name: total_incoming_calls
+        description: number of incoming calls being made on the day
+      - name: total_incoming_call_duration
+        description: duration of incoming calls on the day
+      - name: total_incoming_unique_calling_contacts
+        description: number of unique incoming contacts on the day
+      - name: total_incoming_free_calls
+        description: number of free incoming calls on the day
+      - name: total_incoming_paid_calls
+        description: number of paid incoming calls on the day
+      - name: total_incoming_domestic_calls
+        description: number of domestic incoming calls on the day
+      - name: total_incoming_international_calls
+        description: number of international incoming calls on the day
+      - name: video_call_initiations
+        description: number of video calls being made on the day
+
+  - name: user_features_age_range
+    columns:
+      - name: date_utc
+        description: date
+      - name: username
+        description: username
+      - name: age_range_update_date
+        description: the last age range update date up to the day if exists, else null
+      - name: age_range
+        description: the last reported age range up to the day if exists, else null
+
+
+  - name: user_features_gender
+    columns:
+      - name: date_utc
+        description: date
+      - name: username
+        description: username
+      - name: gender_update_date
+        description: the last gender update date up to the day if exists, else null
+      - name: gender
+        description: the last reported gender up to the day if exists, else null
+
+  - name: user_features_interest
+    columns:
+      - name: date_utc
+        description: date
+      - name: username
+        description: username
+      - name: interest_update_date
+        description: the last interest update date up to the day if exists, else null
+      - name: interest
+        description: the last reported interest up to the day if exists, else null
+
+  - name: user_features_nps
+    columns:
+      - name: date_utc
+        description: date
+      - name: username
+        description: username
+      - name: nps_max_score
+        description: the maximum score generated by the user on the day
+      - name: nps_min_score
+        description: the minimum score generated by the user on the day
+      - name: nps_submitted_score
+        description: the maximum score submitted by the user on the day if exists, else null
+      - name: nps_final_action
+        description: all of the nps actions commanded by the user on the day
+
+  - name: user_features_permissions
+    columns:
+      - name: date_utc
+        description: date
+      - name: username
+        description: username
+      - name: contact_os_shown
+        description: Number of contact permission shown (OS)
+      - name: contact_os_accepted
+        description: Number of contact permission accepted (OS)
+      - name: contact_os_denied
+        description: Number of contact permission denied (OS)
+      - name: android_setup_tn_shown
+        description: Number of android_setup permission shown (TN)
+      - name: android_setup_tn_accepted
+        description: Number of android_setup permission accepted (TN)
+      - name: android_setup_tn_denied
+        description: Number of android_setup permission denied (TN)
+      - name: android_setup_os_shown
+        description: Number of android_setup permission shown (OS)
+      - name: android_setup_os_accepted
+        description: Number of android_setup permission accepted (OS)
+      - name: android_setup_os_denied
+        description: Number of android_setup permission denied (OS)
+      - name: microphone_tn_shown
+        description: Number of microphone permission shown (TN)
+      - name: microphone_tn_accepted
+        description: Number of microphone permission accepted (TN)
+      - name: microphone_tn_denied
+        description: Number of microphone permission denied (TN)
+      - name: microphone_os_shown
+        description: Number of microphone permission shown (OS)
+      - name: microphone_os_accepted
+        description: Number of microphone permission accepted (OS)
+      - name: microphone_os_denied
+        description: Number of microphone permission denied (OS)
+      - name: location_tn_shown
+        description: Number of location permission shown (TN)
+      - name: location_tn_accepted
+        description: Number of location permission accepted (TN)
+      - name: location_tn_denied
+        description: Number of location permission denied (TN)
+      - name: location_os_shown
+        description: Number of location permission shown (OS)
+      - name: location_os_accepted
+        description: Number of location permission accepted (OS)
+      - name: location_os_denied
+        description: Number of location permission denied (OS)
+      - name: phone_os_shown
+        description: Number of phone permission shown (OS)
+      - name: phone_os_accepted
+        description: Number of phone permission accepted (OS)
+      - name: phone_os_denied
+        description: Number of phone permission denied (OS)
+
+  - name: user_features_phone_number
+    columns:
+      - name: date_utc
+        description: date
+      - name: username
+        description: username
+      - name: phone_number_assigns
+        description: number of phone number assignment events occurred to users on the day
+      - name: phone_number_unassigns
+        description: number of phone number unassignment events occurred to users on the day
+
+  - name: user_features_profile_location
+    columns:
+      - name: date_utc
+        description: date
+      - name: username
+        description: username
+      - name: profile_location_update_date
+        description: the last profile location update date up to the day if exists, else null
+      - name: country_code
+        description: the last reported country code up to the day if exists, else null
+      - name: state_code
+        description: the last reported state code up to the day if exists, else null
+      - name: city
+        description: the last reported city up to the day if exists, else null
+      - name: zip_code
+        description: the last reported zip code up to the day if exists, else null
+
+  - name: user_features_tmobile_sim_purchase
+    columns:
+      - name: date_utc
+        description: date
+      - name: username
+        description: username
+      - name: sim_orders
+        description: Number of SIM orders
+
+  - name: user_features_ui_events
+    columns:
+      - name: date_utc
+        description: date
+      - name: username
+        description: username
+      - name: ui_appinbox
+        description: Number of appinbox UI events
+      - name: ui_areacodeselection
+        description: Number of areacodeselection UI events
+      - name: ui_numberselection
+        description: Number of numberselection UI events
+      - name: ui_numberselection_error
+        description: Number of numberselection_error UI events
+      - name: ui_autoassignnumber
+        description: Number of autoassignnumber UI events
+      - name: ui_changepassword
+        description: Number of changepassword UI events
+      - name: ui_conversationlist
+        description: Number of conversationlist UI events
+      - name: ui_conversationlist_newcall
+        description: Number of conversationlist_newcall UI events
+      - name: ui_conversationlist_newmessage
+        description: Number of conversationlist_newmessage UI events
+      - name: ui_conversationlist_error
+        description: Number of conversationlist_error UI events
+      - name: ui_registration
+        description: Number of registration UI events
+      - name: ui_registration_error
+        description: Number of registration_error UI events
+      - name: ui_login
+        description: Number of login UI events
+      - name: ui_login_signup
+        description: Number of login_signup UI events
+      - name: ui_login_login
+        description: Number of login_login UI events
+      - name: ui_login_error
+        description: Number of login_error UI events
+      - name: ui_menu_activatesim
+        description: Number of menu_activatesim UI events
+      - name: ui_menu_adfree
+        description: Number of menu_adfree UI events
+      - name: ui_menu_blog
+        description: Number of menu_blog UI events
+      - name: ui_menu_bringyournumber
+        description: Number of menu_bringyournumber UI events
+      - name: ui_menu_callhistory
+        description: Number of menu_callhistory UI events
+      - name: ui_menu_earncredits
+        description: Number of menu_earncredits UI events
+      - name: ui_menu_freecoverage
+        description: Number of menu_freecoverage UI events
+      - name: ui_menu_myaccount
+        description: Number of menu_myaccount UI events
+      - name: ui_menu_mystore
+        description: Number of menu_mystore UI events
+      - name: ui_menu_mywallet
+        description: Number of menu_mywallet UI events
+      - name: ui_menu_open
+        description: Number of menu_open UI events
+      - name: ui_menu_portnumber
+        description: Number of menu_portnumber UI events
+      - name: ui_menu_removeads
+        description: Number of menu_removeads UI events
+      - name: ui_menu_settings
+        description: Number of menu_settings UI events
+      - name: ui_menu_sharenumber
+        description: Number of menu_sharenumber UI events
+      - name: ui_menu_support
+        description: Number of menu_support UI events
+      - name: ui_menu_wireless
+        description: Number of menu_wireless UI events
+      - name: ui_menu_offers
+        description: Number of menu_offers UI events
+      - name: ui_onboarding
+        description: Number of onboarding UI events
+      - name: ui_onboarding_error
+        description: Number of onboarding_error UI events
+      - name: ui_permissions_camera
+        description: Number of permissions_camera UI events
+      - name: ui_permissions_contacts
+        description: Number of permissions_contacts UI events
+      - name: ui_permissions_contacts_disabledafteracceptance
+        description: Number of permissions_contacts_disabledafteracceptance UI events
+      - name: ui_permissions_defaultcallingapp
+        description: Number of permissions_defaultcallingapp UI events
+      - name: ui_permissions_floatingchat
+        description: Number of permissions_floatingchat UI events
+      - name: ui_permissions_location
+        description: Number of permissions_location UI events
+      - name: ui_permissions_microphone
+        description: Number of permissions_microphone UI events
+      - name: ui_permissions_microphone_disabledafteracceptance
+        description: Number of permissions_microphone_disabledafteracceptance UI events
+      - name: ui_permissions_notifications
+        description: Number of permissions_notifications UI events
+      - name: ui_permissions_notification_disabledafteracceptance
+        description: Number of permissions_notification_disabledafteracceptance UI events
+      - name: ui_permissions_phone
+        description: Number of permissions_phone UI events
+      - name: ui_permissions_photo
+        description: Number of permissions_photo UI events
+      - name: ui_permissions_tracking
+        description: Number of permissions_tracking UI events
+      - name: ui_portnumbersubmit
+        description: Number of portnumbersubmit UI events
+      - name: ui_portnumbersubmit_error
+        description: Number of portnumbersubmit_error UI events
+      - name: ui_portnumbervalidation
+        description: Number of portnumbervalidation UI events
+      - name: ui_portnumbervalidation_error
+        description: Number of portnumbervalidation_error UI events
+      - name: ui_profile
+        description: Number of profile UI events
+      - name: ui_settings_blockednumbers
+        description: Number of settings_blockednumbers UI events
+      - name: ui_settings_callforwarding
+        description: Number of settings_callforwarding UI events
+      - name: ui_settings_callingsettings
+        description: Number of settings_callingsettings UI events
+      - name: ui_settings_displaysettings
+        description: Number of settings_displaysettings UI events
+      - name: ui_settings_emailnotifications
+        description: Number of settings_emailnotifications UI events
+      - name: ui_settings_error
+        description: Number of settings_error UI events
+      - name: ui_settings_feedback
+        description: Number of settings_feedback UI events
+      - name: ui_settings_followtwitter
+        description: Number of settings_followtwitter UI events
+      - name: ui_settings_legalprivacy
+        description: Number of settings_legalprivacy UI events
+      - name: ui_settings_likefb
+        description: Number of settings_likefb UI events
+      - name: ui_settings_messagepreview
+        description: Number of settings_messagepreview UI events
+      - name: ui_settings_messagingsettings
+        description: Number of settings_messagingsettings UI events
+      - name: ui_settings_notificationsettings
+        description: Number of settings_notificationsettings UI events
+      - name: ui_settings_opensourcelicenses
+        description: Number of settings_opensourcelicenses UI events
+      - name: ui_settings_restorepurchases
+        description: Number of settings_restorepurchases UI events
+      - name: ui_settings_securitysettings
+        description: Number of settings_securitysettings UI events
+      - name: ui_settings_signature
+        description: Number of settings_signature UI events
+      - name: ui_settings_sound
+        description: Number of settings_sound UI events
+      - name: ui_settings_verifyemail
+        description: Number of settings_verifyemail UI events
+      - name: ui_settings_voicemail
+        description: Number of settings_voicemail UI events
+      - name: ui_settings_wallpaper
+        description: Number of settings_wallpaper UI events
+      - name: ui_simdevicecheck
+        description: Number of simdevicecheck UI events
+      - name: ui_simdevicecheck_error
+        description: Number of simdevicecheck_error UI events
+      - name: ui_simorderstart_skip
+        description: Number of simorderstart_skip UI events
+      - name: ui_simorderstart_buysimkit
+        description: Number of simorderstart_buysimkit UI events
+      - name: ui_simordershippinginfo
+        description: Number of simordershippinginfo UI events
+      - name: ui_simordershippinginfo_error
+        description: Number of simordershippinginfo_error UI events
+      - name: ui_simordersummary
+        description: Number of simordersummary UI events
+      - name: ui_simordersummary_cancel
+        description: Number of simordersummary_cancel UI events
+      - name: ui_simordersummary_error
+        description: Number of simordersummary_error UI events
+      - name: ui_simordercomplete
+        description: Number of simordercomplete UI events
+      - name: ui_simpurchaseandactivation_click
+        description: Number of simpurchaseandactivation_click UI events
+      - name: ui_simpurchaseandactivation_view
+        description: Number of simpurchaseandactivation_view UI events
+      - name: ui_singlepagesimordercheckout
+        description: Number of singlepagesimordercheckout UI events
+      - name: ui_singlepagesimordercheckout_cancel
+        description: Number of singlepagesimordercheckout_cancel UI events
+      - name: ui_singlepagesimordercheckout_submit
+        description: Number of singlepagesimordercheckout_submit UI events
+      - name: ui_voicemail_customgreeting
+        description: Number of voicemail_customgreeting UI events
+      - name: ui_voicemail_defaultgreeting
+        description: Number of voicemail_defaultgreeting UI events
+      - name: ui_voicemail_usevoicemail
+        description: Number of voicemail_usevoicemail UI events
+
+  - name: user_features_user_acquisition
+    columns:
+      - name: username
+        description: username
+      - name: user_created_at
+        description: created timestamp of the user
+      - name: user_set_id
+        description: User set id this username belongs to
+      - name: user_set_created_at
+        description: created timestamp of the user set associated with the user
+      - name: is_organic
+        description: true if a user is coming from the organic channel, else false
+
+  - name: user_features_user_segment
+    columns:
+      - name: date_utc
+        description: date
+      - name: username
+        description: username
+      - name: sub_type
+        description: subscription type of the user on the day
+      - name: ad_upgrade_type
+        description: type of Ad upgrade plan being subscribed via IAP if exists, else null
+      - name: phone_num_upgrade_type
+        description: type of phone number upgrade plan being subscribed via IAP if exists, else null
+      - name: consumable_type
+        description: type of consumable product being purchased if exists, else null
+
+  - name: user_features_use_cases
+    columns:
+      - name: date_utc
+        description: date
+      - name: username
+        description: username
+      - name: use_case_update_date
+        description: the last use case update date up to the day if exists, else null
+      - name: use_case
+        description: the last reported use case up to the day if exists, else null

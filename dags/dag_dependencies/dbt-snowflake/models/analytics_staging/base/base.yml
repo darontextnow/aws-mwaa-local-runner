@@ -1,0 +1,190 @@
+version: 2
+
+
+sources:
+  - name: base
+    schema: core
+    tables:
+      - name: plans
+
+
+models:
+
+  - name: base_user_mdn_history
+    description: A history table of user wireless subscription mdn and inventory item
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: mdn
+        description: MDN
+      - name: item_uuid
+        description: inventory item UUID
+      - name: product_id
+        description: product id associated with item
+      - name: from_ts
+        description: the timestamp this record is valid since
+        tests:
+          - not_null
+      - name: to_ts
+        description: the timestamp this record is valid until (NULL denotes infinity, i.e. record is currently valid)
+
+  - name: base_user_subscription_history
+    description: A history table of user wireless subscription plan id and status
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: period_start
+        description: wireless plan subscription cycle start
+      - name: period_end
+        description: wireless plan subscription cycle end
+      - name: plan_id
+        description: internal wireless plan id
+      - name: status
+        description: subscription status
+      - name: recurring_bill_id
+        description: Billing Service recurring bill id
+      - name: billing_item_id
+        description: Billing Service item id
+      - name: from_ts
+        description: the timestamp this record is valid since
+        tests:
+          - not_null
+      - name: to_ts
+        description: the timestamp this record is valid until (NULL denotes infinity, i.e. record is currently valid)
+
+  - name: base_user_daily_subscription
+    description: Daily snapshot of username, mdn (phone number), item_uuid (device id), plan_id (wireless plan)
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - username
+    columns:
+      - name: date_utc
+        description: date in UTC
+        tests:
+          - not_null
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: mdn
+        description: mdn of device
+        tests:
+          - not_null
+      - name: network
+        description: wireless network like 'T-Mobile', 'Sprint', 'Kore'
+      - name: carrier
+        description: carrier of the wireless network
+      - name: item_uuid
+        description: id of device
+        tests:
+          - not_null
+      - name: product_id
+        description: id of device type
+      - name: product_name
+        description: name of device type
+      - name: plan_id
+        description: internal wireless plan id
+      - name: plan_name
+        description: name of the internal wireless plan
+      - name: status
+        description: wireless plan status
+      - name: is_free
+        description: whether the wireless plan is free or not to TN users 
+      - name: plan_family
+        description: category of the wireless plan
+
+  - name: base_user_use_cases
+    description: Most recent use cases assigned for users
+    columns:
+      - name: username
+        description: username
+      - name: user_id_hex
+        description: user identifier
+      - name: created_at
+        description: the timestamp at which user use case was last created
+      - name: use case
+        description: use case for which a user is tagged to
+      - name: date_utc
+        description: the date at which user profile was last updated
+      - name: hour
+        description: the hour at which user profile was last updated
+
+  - name: base_user_messages
+    description: Per day per user level message data
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - user_id
+    columns:
+      - name: date_utc
+        description: date of the message sent event
+        tests:
+          - not_null
+      - name: message_vendor
+        description: Term providers for messaging event
+      - name: type_of_message
+        description: type of the message (SMS, MMS, SC etc.,)
+        tests:
+          - accepted_values:
+              values: [ 'SMS', 'MMS', 'SC', 'SMTP', 'ZIPWHIP', 'TN', 'UNKNOWN' ]
+      - name: user_id
+        description: user_id_hex - User identifier
+      - name: num_of_messages
+        description: Total number of messages sent by the user on that day
+
+  - name: base_user_daily_messages
+    description: Per day per user level message data
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - user_id
+    columns:
+      - name: date_utc
+        description: date of the message sent event
+        tests:
+          - not_null
+      - name: message_vendor
+        description: Term providers for messaging event
+      - name: type_of_message
+        description: type of the message (SMS, MMS, SC etc.,)
+        tests:
+          - accepted_values:
+              values: [ 'SMS', 'MMS', 'SC', 'SMTP', 'ZIPWHIP', 'TN', 'UNKNOWN' ]
+      - name: user_id
+        description: user_id_hex - User identifier
+      - name: num_of_messages
+        description: Total number of messages sent by the user on that day
+
+  - name: base_user_embrace_sessions
+    description: sessions data from embrace at session and user level with session duration
+    columns:
+      - name: date_utc
+        description: date when embrace recieved the session data
+      - name: username
+        description: username
+      - name: device_id
+        description: device_id
+      - name: client_type
+        description: platform
+      - name: country
+        description: country
+      - name: session_id
+        description: unique ID generated by embrace for every session
+      - name: session_start_timestamp
+        description: timestamp when the session started
+      - name: session_end_timestamp
+        description: timestamp when the session ended
+      - name: duration
+        description: session duration
+      - name : location_first_octet_ip
+        description: first octet of the ip address
+      - name: location_second_octet_ip
+        description: second octet of the ip address

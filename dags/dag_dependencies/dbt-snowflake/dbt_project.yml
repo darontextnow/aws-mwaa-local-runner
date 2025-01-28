@@ -1,0 +1,97 @@
+name: 'textnow'
+version: '1.1.0'
+
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: "default"
+
+require-dbt-version: "1.7.12"
+
+# These configurations specify where dbt should look for different types of files.
+# The `source-paths` config, for example, states that models in this project can be
+# found in the "models/" directory. You probably won't need to change these!
+model-paths: ["models"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+  - "dbt_modules"
+
+# Configuring models
+# Full documentation: https://docs.getdbt.com/docs/configuring-models
+
+# custom config for our models
+# custom schema will be used when dbt runs in prod,
+# target schema will be used for staging model in dev
+vars:
+  surrogate_key_treat_nulls_as_empty_strings: true  # turn on legacy behaviour details found here https://github.com/dbt-labs/dbt-utils#generate_surrogate_key-source
+  ds: CURRENT_DATE  # default to be overwritten by command line option --vars
+  data_interval_start: CURRENT_TIMESTAMP  # default to be overwritten by command line option --vars
+  data_interval_end: CURRENT_TIMESTAMP  # default to be overwritten by command line option --vars
+  current_date: CURRENT_DATE  # default to be overwritten by command line option --vars
+  current_timestamp: CURRENT_TIMESTAMP  # default to be overwritten by command line option --vars
+
+models:
+  +transient: false
+  +query_tag: dbt_run
+  +incremental_strategy: delete+insert
+  textnow:
+    adjust:
+      +schema: adjust
+    adops:
+      +schema: adops
+    analytics:
+      +schema: analytics
+    analytics_staging:
+      +schema: analytics_staging
+      +copy_grants: true
+    apphealth:
+      +schema: apphealth
+    core:
+      +schema: core
+    dau:
+      +schema: dau
+    haus_db:
+      +database: haus
+      public:
+        +schema: public
+    ltv:
+      +schema: ltv
+    party_planner_realtime:
+      +schema: party_planner_realtime
+    product_analytics:
+      +schema: product_analytics
+    summary:
+      +schema: summary
+    support:
+      +schema: support
+    trust_safety:
+      +schema: trust_safety
+    user_features:
+      +full_refresh: false
+      +schema: user_features
+      user_features_raw:
+        +schema: user_features
+      user_features_rolling:
+        +schema: user_features
+        +materialized: incremental
+        +unique_key: report_date
+      user_set_features_rolling:
+        +schema: user_features
+        +materialized: incremental
+        +unique_key: report_date
+      
+seeds:
+  +schema: analytics
+  +quote_columns: False
+  textnow:
+    +copy_grants: true
+
+tests:
+  textnow:
+    user_features:
+      +severity: warn

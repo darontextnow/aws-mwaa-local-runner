@@ -1,0 +1,564 @@
+version: 2
+
+sources:
+  - name: adjust
+    tables:
+      - name: apps
+      - name: logins_with_pi
+      - name: registrations
+      - name: updated_attribution_with_pi
+      - name: att_events
+      - name: raw_events
+      - name: reportservice_kpi
+
+
+  - name: adjust
+    schema: ua
+    tables:
+      - name: spend_attribution
+
+models:
+  - name: adjust_trackers
+    description: mapping tracker strings to network/campaign/adgroup/creative
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - client_type
+            - tracker
+    columns:
+      - name: client_type
+        description: internally used client type (could be null for wasted ad spend)
+      - name: tracker
+        description: Adjust's tracker, or custom trackers for Tatari or trackers of length 12 that help keep track of wasted ad spend
+        tests:
+          - not_null
+      - name: network_name
+        description: latest Network name associated with the tracker
+        tests:
+          - not_null
+      - name: campaign_name
+        description: latest Campaign name associated with the tracker
+      - name: adgroup_name
+        description: latest Adgroup name associated with the tracker
+      - name: creative_name
+        description: latest Creative name associated with the tracker
+
+  - name: adjust_installs
+    description: install events tracked by Adjust. Only production installs with known app_name are included
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - client_type
+            - adjust_id
+    columns:
+      - name: surrogate_key
+        description: unique key for this table. A hash of client_type and adjust_id
+        tests:
+          - not_null
+          - unique
+      - name: "event_received_date_utc"
+        description: Partition key from ext.adjust_events
+      - name: adjust_id
+        description: Adjust's device identifier
+        tests:
+          - not_null
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: app_name
+        description: application name
+      - name: app_id
+        description: Adjust App ID
+      - name: client_version
+        description: version of the client recorded by Adjust
+      - name: installed_at
+        description: timestamp of the install event
+        tests:
+          - not_null
+      - name: click_time
+        description: timestamp of the attributed click
+      - name: tracker
+        description: Adjust's attribution tracker
+      - name: store
+        description: target store where the click happened
+        tests:
+          - accepted_values:
+              values: ['itunes', 'google', 'wstore', 'wphone']
+      - name: impression_based
+        description: whether the attribution is based on an impression
+      - name: is_organic
+        description: whether the install is organic
+      - name: is_untrusted
+        description: whether the device is untrusted according to Adjust's fraud prevention filter
+      - name: match_type
+        description: attribution method (e.g. fingerprint/device_tag/google)
+      - name: device_type
+        description: type of device (e.g. phone/tablet)
+      - name: device_name
+        description: device model number
+      - name: os_name
+        description: name of the operating system (e.g. ios/android)
+      - name: os_version
+        description: version of the operating system
+      - name: sdk_version
+        description: Adjust SDK version
+      - name: country_code
+        description: two-character country code (e.g. GB)
+      - name: region_code
+        description: two-character region code (e.g. US)
+      - name: country_subdivision
+        description: country_subdivision (e.g. California)
+      - name: city
+        description: city (e.g. Berlin)
+      - name: postal_code
+        description: postal_code (e.g. 12101)
+      - name: language
+        description: two-character language code (e.g. en)
+      - name: ip_address
+        description: client ip address
+      - name: tracking_limited
+        description: whether limited ad tracking is turned on
+      - name: deeplink
+        description: deeplink URL appended to click URL
+      - name: timezone
+        description: Device time zone
+      - name: connection_type
+        description: Internet connection Type (e.g. celluar)
+      - name: idfa
+        description: device ID of iOS devices
+      - name: idfv
+        description: vendor ID of iOS devices
+      - name: gps_adid
+        description: device ID of Android devices
+      - name: android_id
+        description: vendor ID of Android devices
+
+  - name: adjust_installs_stage
+    description: install events tracked by Adjust recieveed through realtime callbacks and csv uploads
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - client_type
+            - adjust_id
+    columns:
+      - name: surrogate_key
+        description: unique key for this table. A hash of client_type and adjust_id
+        tests:
+          - not_null
+          - unique
+      - name: "event_received_date_utc"
+        description: Partition key from ext.adjust_events
+      - name: adjust_id
+        description: Adjust's device identifier
+        tests:
+          - not_null
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: app_name
+        description: application name
+    
+      - name: client_version
+        description: version of the client recorded by Adjust
+      - name: installed_at
+        description: timestamp of the install event
+        tests:
+          - not_null
+      - name: click_time
+        description: timestamp of the attributed click
+      - name: tracker
+        description: Adjust's attribution tracker
+      - name: store
+        description: target store where the click happened
+        tests:
+          - accepted_values:
+              values: ['itunes', 'google', 'wstore', 'wphone']
+      - name: impression_based
+        description: whether the attribution is based on an impression
+      - name: is_organic
+        description: whether the install is organic
+      - name: is_untrusted
+        description: whether the device is untrusted according to Adjust's fraud prevention filter
+      - name: match_type
+        description: attribution method (e.g. fingerprint/device_tag/google)
+      - name: device_type
+        description: type of device (e.g. phone/tablet)
+      - name: device_name
+        description: device model number
+      - name: os_name
+        description: name of the operating system (e.g. ios/android)
+      - name: os_version
+        description: version of the operating system
+      - name: sdk_version
+        description: Adjust SDK version
+      - name: region_code
+        description: two-character region code (e.g. US)
+      - name: country_code
+        description: two-character country code (e.g. GB)
+      - name: country_subdivision
+        description: country_subdivision (e.g. California)
+      - name: city
+        description: city (e.g. Berlin)
+      - name: postal_code
+        description: postal_code (e.g. 12101)
+      - name: language
+        description: two-character language code (e.g. en)
+      - name: ip_address
+        description: client ip address
+      - name: tracking_limited
+        description: whether limited ad tracking is turned on
+      - name: deeplink
+        description: deeplink URL appended to click URL
+      - name: timezone
+        description: Device time zone
+      - name: connection_type
+        description: Internet connection Type (e.g. celluar)
+      - name: idfa
+        description: device ID of iOS devices
+      - name: idfv
+        description: vendor ID of iOS devices
+      - name: gps_adid
+        description: device ID of Android devices
+      - name: android_id
+        description: vendor ID of Android devices
+
+  - name: adjust_registrations
+    description: registration events tracked by Adjust
+    columns:
+      - name: username
+        description: TextNow username
+      - name: adjust_id
+        description: Adjust's device identifier
+        tests:
+          - not_null
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: client_version
+        description: version of the client recorded by Adjust
+      - name: created_at
+        description: timestamp of the registration event
+        tests:
+          - not_null
+      - name: installed_at
+        description: install timestamp of the registering device
+        tests:
+          - not_null
+      - name: click_time
+        description: attributed click timestamp of the registering device
+      - name: tracker
+        description: Adjust's attribution tracker
+      - name: store
+        description: target store where the click happened
+        tests:
+          - accepted_values:
+              values: ['itunes', 'google', 'wstore', 'wphone']
+      - name: impression_based
+        description: whether the attribution is based on an impression
+      - name: is_organic
+        description: whether the install is organic
+      - name: match_type
+        description: attribution method (e.g. fingerprint/device_tag/google)
+      - name: device_type
+        description: type of device (e.g. phone/tablet)
+      - name: device_name
+        description: device model number
+      - name: os_name
+        description: name of the operating system (e.g. ios/android)
+      - name: os_version
+        description: version of the operating system
+      - name: country_code
+        description: two-character country code (e.g. US)
+
+  - name: adjust_logins
+    description: login events tracked by Adjust
+    columns:
+      - name: username
+        description: TextNow username
+      - name: adjust_id
+        description: Adjust's device identifier
+        tests:
+          - not_null
+      - name: client_type
+        description: internally used client types
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: client_version
+        description: version of the client recorded by Adjust
+      - name: created_at
+        description: timestamp of the login event
+        tests:
+          - not_null
+      - name: installed_at
+        description: install timestamp of the login device
+        tests:
+          - not_null
+      - name: tracker
+        description: Adjust's attribution tracker
+      - name: store
+        description: target store where the click happened
+        tests:
+          - accepted_values:
+              values: ['itunes', 'google', 'wstore', 'wphone']
+      - name: is_organic
+        description: whether the install is organic
+      - name: device_type
+        description: type of device (e.g. phone/tablet)
+      - name: device_name
+        description: device model number
+      - name: os_name
+        description: name of the operating system (e.g. ios/android)
+      - name: os_version
+        description: version of the operating system
+      - name: sdk_version
+        description: Adjust SDK version
+      - name: country_code
+        description: two-character country code (e.g. US)
+
+  - name: adjust_reattributions
+    description: reattribution events tracked by Adjust
+    columns:
+      - name: adjust_id
+        description: Adjust's device identifier
+        tests:
+          - not_null
+      - name: app_id
+        description: Adjust's app identifier
+      - name: app_name
+        description: Adjust's app name
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: client_version
+        description: version of the client recorded by Adjust
+      - name: installed_at
+        description: timestamp of the install event
+        tests:
+          - not_null
+      - name: reattributed_at
+        description: timestamp of the reattribution event
+        tests:
+          - not_null
+      - name: created_at
+        description: timestamp of the reattribution event
+        tests:
+          - not_null
+      - name: click_time
+        description: timestamp of the attributed click
+      - name: tracker
+        description: Adjust's attribution tracker
+      - name: store
+        description: target store where the click happened
+        tests:
+          - accepted_values:
+              values: ['itunes', 'google', 'wstore', 'wphone']
+      - name: impression_based
+        description: whether the attribution is based on an impression
+      - name: is_organic
+        description: whether the install is organic
+      - name: is_untrusted
+        description: whether the install is untrusted
+      - name: match_type
+        description: attribution method (e.g. fingerprint/device_tag/google)
+      - name: device_type
+        description: type of device (e.g. phone/tablet)
+      - name: device_name
+        description: device model number
+      - name: os_name
+        description: name of the operating system (e.g. ios/android)
+      - name: os_version
+        description: version of the operating system
+      - name: sdk_version
+        description: Adjust SDK version
+      - name: region_code
+        description: two-character region code (e.g. US)
+      - name: country_code
+        description: two-character country code (e.g. GB)
+      - name: country_subdivision
+        description: country_subdivision (e.g. California)
+      - name: city
+        description: city (e.g. Berlin)
+      - name: postal_code
+        description: postal_code (e.g. 12101)
+      - name: language
+        description: two-character language code (e.g. en)
+      - name: ip_address
+        description: client ip address
+      - name: tracking_limited
+        description: whether limited ad tracking is turned on
+      - name: deeplink
+        description: deeplink URL appended to click URL
+      - name: timezone
+        description: Device time zone
+      - name: connection_type
+        description: Internet connection Type (e.g. celluar)
+      - name: reattribution_attribution_window_hours
+        description: attribution window setting (hours)
+      - name: inactive_user_definition_hours
+        description: inactivity period required for reattribution (hours)
+      - name: idfa
+        description: device ID of iOS devices
+      - name: idfv
+        description: vendor ID of iOS devices
+      - name: gps_adid
+        description: device ID of Android devices
+      - name: android_id
+        description: vendor ID of Android devices
+
+  - name: adjust_sessions
+    description: sessions recorded by Adjust
+    columns:
+      - name: username
+        description: TextNow username
+      - name: adjust_id
+        description: Adjust's device identifier
+        tests:
+          - not_null
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: client_version
+        description: version of the client recorded by Adjust
+      - name: created_at
+        description: timestamp at which the session is created
+        tests:
+          - not_null
+      - name: installed_at
+        description: timestamp of the install event
+        tests:
+          - not_null
+      - name: click_time
+        description: timestamp of the attributed click
+      - name: tracker
+        description: Adjust's attribution tracker
+      - name: store
+        description: target store where the click happened
+        tests:
+          - accepted_values:
+              values: ['itunes', 'google', 'wstore', 'wphone']
+      - name: last_time_spent
+        description: duration of the last session (seconds)
+      - name: connection_type
+        description: type of internet connection (e.g. cellular; Coporate)
+      - name: is_organic
+        description: whether the install is organic
+      - name: os_version
+        description: version of the operating system
+      - name: country_code
+        description: two-character country code (e.g. US)
+      - name: tracking_limited
+        description: whether limited ad tracking is turned on
+
+  - name: adjust_kpis
+    description: KPIs related to Adjust
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - cohort_utc
+            - client_type
+            - tracker
+            - device_type
+            - country_code
+    columns:
+      - name: cohort_utc
+        description: date of installs
+        tests:
+          - not_null
+      - name: client_type
+        description: internally used client types
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: tracker
+        description: Adjust's attribution tracker, or custom trackers of length 12 that help keep track of wasted ad spend
+        tests:
+          - not_null
+      - name: device_type
+        description: type of device (e.g. phone/tablet)
+        tests:
+          - not_null
+      - name: country_code
+        description: two-character country code (e.g. US)
+        tests:
+          - not_null
+      - name: event_network
+        description: name of the UA network captured by the given Adjust event (change possible over time)
+      - name: event_campaign
+        description: name of the UA campaign captured by the given Adjust event (change possible over time)
+      - name: event_adgroup
+        description: name of the UA adgroup captured by the given Adjust event (change possible over time)
+      - name: event_creative
+        description: name of the UA creative asset captured by the given Adjust event (change possible over time)
+      - name: cost
+        description: cost of the provided UA channel
+      - name: impressions
+        description: number of impressions
+      - name: clicks
+        description: number of clicks
+      - name: installs
+        description: number of installs
+      - name: reattributions
+        description: number of reattributions
+      - name: sessions
+        description: number of sessions
+      - name: costs
+        description: dollar amount spent on tracker
+
+  - name: adjust_att_status
+    description: current ATT status of our iOS users
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - adjust_id
+            - client_type
+    columns:
+      - name: adjust_id
+        description: Adjust's device identifier
+        tests:
+          - not_null
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_IOS_FREE', 'TN_IOS']
+      - name: app
+      - name: client_version
+        description: version of the client recorded by Adjust
+      - name: os_version
+        description: version of the operating system
+      - name: sdk_version
+        description: Adjust SDK version
+      - name: tracker
+        description: Adjust's attribution tracker
+      - name: created_at
+        description: timestamp at which the current att_status is reached
+        tests:
+          - not_null
+      - name: att_status
+        description: current status of AppTransparencyTracking
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['undetermined', 'restricted', 'denied', 'authorized']
+
+  - name: adjust_latest_raw_events
+    description: staging table to load latest raw events data into Snowflake for downstream model shared use

@@ -1,0 +1,141 @@
+version: 2
+
+models:
+  - name: first_registration_on_device
+    description: first registration on devices with app installed since 2020-01-01
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: created_at
+        description: registration time
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - not_null
+      - name: client_version
+        description: app version
+        tests:
+          - not_null
+      - name: country_code
+        description: country_code
+        tests:
+          - not_null
+      - name: adid
+        description: device id from adjust
+        tests:
+          - not_null
+
+  - name: new_user_permissions
+    description: first registration permission events that happen within first 2 days
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: date_utc
+        description: permission date
+        tests:
+          - not_null
+      - name: permission_time
+        description: permission_timestamp
+        tests:
+          - not_null
+      - name: platform
+        description: client type in PP
+        tests:
+          - not_null
+      - name: event_source
+        description: source of permission, TN=primer
+      - name: permission_alert_state
+        description: permission alert state for the registered user
+      - name: permission_type
+        description: permission event type for the registered user
+      - name: adid
+        description: adjust id in PP
+      - name: client_version
+        description: client_version from registration
+      - name: client_type
+        description: platform
+      - name: registration_time
+        description: registration date and time
+      - name: registration_adid
+        description: ADID registered
+
+  - name: ui_tracking_events
+    description: UI events captured on clients
+    columns:
+      - name: date_utc
+        tests:
+          - not_null
+      - name: username
+      - name: adjust_id
+        description: device id from adjust
+      - name: platform
+        description: client type in PP data
+      - name: created_at
+        description: event time
+      - name: event_id
+      - name: client_version
+        description: app version
+      - name: UITracking_Category
+        description: users interactions with the App are categorized
+      - name: UITracking_Action
+        description: users actions 
+      - name: UITracking_Label
+        description: users interactions are categorized and labeled
+      - name: UITracking_Value
+        description: value
+
+
+  - name: ipinfo_privacy
+    description: proxy/vpn info
+    columns:
+      - name: start_ip
+      - name: end_ip
+      - name: join_key
+      - name: hosting
+      - name: proxy
+      - name: tor
+      - name: vpn
+      - name: load_date
+
+  - name: new_user_activation
+    description: registered users with valid session that has a device assosciated with it their d2 and d7 activation
+    columns:
+      - name: username
+        description: username
+      
+      - name: created_at
+        description: registered date
+     
+      - name: d2_activated
+        description: number of messages and outgoing calls on day 2 of registration
+ 
+      - name: d2_activated_outgoing_call
+        description: number of outgoing calls on day 2 of registration
+   
+      - name: d2_activated_outgoing_message
+        description: number of messages on day 2 of registration
+
+      - name: d2_activated_ad_impressions
+        description: number of ad impressions on day 2 of registration
+
+      - name: d7_activated_outgoing_call
+        description:  number of outgoing calls on day 7 of registration
+
+      - name: d7_activated_outgoing_message
+        description:  number of messages on day 7 of registration
+
+      - name: d7_activated_ad_impressions
+        description: number of ad impressions on day 2 of registration
+
+      - name: week2_retained
+        description: active users in week 2
+        
+      - name: week2_retained_outgoing_activity
+        description: number of messages and outgoing calls on day 14 of registration
+

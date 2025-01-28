@@ -1,0 +1,77 @@
+version: 2
+
+models:
+  - name: haus_early_mover_staging
+    description: Staging data from UA early mover event for haus is generated
+    columns:
+      - name: date_utc
+        description: date of install
+      - name: adjust_id
+        description: adjust_id
+      - name: client_type
+        description: client type of the install
+      - name: ip_address
+        description: ip address of the registration
+      - name: ip_postal_code
+        description: postal code from ip geo info data
+      - name: ip_country_code
+        description:
+          country code from ip geo info data
+
+  - name: haus_installs_staging
+    description: Staging data from which installs kpi aggregration for haus is generated
+    columns:
+      - name: date_utc
+        description: date of install
+      - name: adjust_id
+        description: adjust_id
+      - name: client_type
+        description: client type of the install
+      - name: ip_address
+        description: ip address of the install
+      - name: adj_postal_code
+        description: postal code from adjust data
+      - name: adj_country_code
+        description: country code from adjust data
+      - name: installed_at
+        description: the timestamp of install
+      - name: ip_postal_code
+        description: postal code from ip geo info data
+      - name: ip_country_code
+        description: country code from ip geo info data
+      - name: is_organic
+        description: if install is organic or paid
+      - name: ip_geoname_id
+        description: geoname id from ip geo info data
+      - name: subdivision_1_name
+        description: state name from maxmind data
+      - name: city_name
+        description: city name from maxmind data
+
+  - name: haus_registrations_staging
+    description: Staging data from which registrations kpi aggregration for haus is generated
+    columns:
+      - name: date_utc
+        description: date of registration
+      - name: adjust_id
+        description: adjust_id
+      - name: client_type
+        description: client type of the registration
+      - name: ip_address
+        description: ip address of the registration
+      - name: adj_country_code
+        description: country code from adjust data
+      - name: installed_at
+        description: the timestamp of registration
+      - name: ip_postal_code
+        description: postal code from ip geo info data
+      - name: ip_country_code
+        description: country code from ip geo info data
+      - name: is_organic
+        description: if registration is organic or paid
+      - name: ip_geoname_id
+        description: geoname id from ip geo info data
+      - name: subdivision_1_name
+        description: state name from maxmind data
+      - name: city_name
+        description: city name from maxmind data

@@ -1,0 +1,57 @@
+version: 2
+
+sources:
+  - name: phone_number_service
+    schema: core
+    tables:
+      - name: phone_number_logs
+
+models:
+  - name: phone_number_assignments
+    description: Logs of phone numbers assignment/unassignment/port in/port out events
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: phone_number
+        description: phone number
+        tests:
+          - not_null
+      - name: event
+        description: phone number event
+        tests:
+          - accepted_values:
+              values: ['ASSIGN', 'PORTIN', 'UNASSIGN', 'PORTOUT']
+      - name: created_at
+        description: the timestamp when the phone number event was created
+        tests:
+          - not_null
+
+  - name: phone_number_history
+    description: Records phone number assignment to user accounts
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - username
+            - phone_number
+            - assigned_at
+    columns:
+      - name: assigment_id
+        description: phone number assignment identifier
+        tests:
+          - unique
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: phone_number
+        description: phone number
+        tests:
+          - not_null
+      - name: assigned_at
+        description: the timestamp when the phone number was assigned
+        tests:
+          - not_null
+      - name: unassigned_at
+        description: the timestamp when the phone number was unassigned

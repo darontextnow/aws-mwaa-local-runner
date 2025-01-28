@@ -1,0 +1,748 @@
+version: 2
+
+sources:
+  - name: analytics
+    tables:
+      - name: existing_user_trust_scores
+      - name: existing_user_trust_scores_latest_30days
+      - name: ltv_active_days_prediction
+      - name: ltv_synthetic_high_ltv_event
+      - name: maxmind_geoip2_city_locations_en
+      - name: maxmind_geoip2_city_blocks_ipv4
+      - name: maxmindasn_geolite2_asn_blocks_ipv4
+      - name: new_user_trust_scores
+      - name: segmentation
+      - name: sim_purchase_propensity
+      - name: demo_gender_pred
+      - name: demo_ethnicity_pred
+      - name: sim_plans
+  - name: fraud_alerts
+    tables:
+      - name: installs
+  - name: adjust
+    tables:
+      - name: skad_payloads
+  - name: core
+    tables:
+      - name: sandvine_app_domain
+      - name: sandvine_app_usage
+
+models:
+
+  - name: currency_fx
+    description: Daily exchange rates (against USD) implied by in Google Play Store earnings
+    columns:
+      - name: date_utc
+        description: date for the exchange rate
+      - name: currency
+        description: Alpha-3 ISO Currency Code
+      - name: fx_usd
+        description: exchange rate against USD
+
+  - name: analytics_users
+    description: a mapping of user_id_hex, username and user_set_id
+    columns:
+      - name: user_id_hex
+        description: user identifier
+      - name: username
+        description: username
+      - name: user_set_id
+        description: user_set_id
+      - name: created_at
+        description: the user registration timestamp
+
+  - name: installs
+    description: All installs (devices) tracked by Adjust with untrusted filtered out
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - client_type
+            - adjust_id
+    columns:
+      - name: adjust_id
+        description: Adjust's device identifier
+        tests:
+          - not_null
+      - name: client_type
+        description: internally used client type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_IOS']
+      - name: app_name
+        description: application name
+      - name: app_id
+        description: Adjust App ID
+      - name: client_version
+        description: version of the client recorded by Adjust
+      - name: installed_at
+        description: timestamp of the install event
+        tests:
+          - not_null
+      - name: click_time
+        description: timestamp of the attributed click
+      - name: tracker
+        description: Adjust's attribution tracker
+      - name: store
+        description: target store where the click happened
+        tests:
+          - accepted_values:
+              values: ['itunes', 'google', 'wstore', 'wphone']
+      - name: impression_based
+        description: whether the attribution is based on an impression
+      - name: is_organic
+        description: whether the install is organic
+      - name: is_untrusted
+        description: whether the device is untrusted according to Adjust's fraud prevention filter
+      - name: match_type
+        description: attribution method (e.g. fingerprint/device_tag/google)
+      - name: device_type
+        description: type of device (e.g. phone/tablet)
+      - name: device_name
+        description: device model number
+      - name: os_name
+        description: name of the operating system (e.g. ios/android)
+      - name: os_version
+        description: version of the operating system
+      - name: sdk_version
+        description: Adjust SDK version
+      - name: country_code
+        description: two-character country code (e.g. GB)
+      - name: region_code
+        description: two-character region code (e.g. US)
+      - name: country_subdivision
+        description: country_subdivision (e.g. California)
+      - name: city
+        description: city (e.g. Berlin)
+      - name: postal_code
+        description: postal_code (e.g. 12101)
+      - name: language
+        description: two-character language code (e.g. en)
+      - name: tracking_limited
+        description: whether limited ad tracking is turned on
+      - name: deeplink
+        description: deeplink URL appended to click URL
+      - name: timezone
+        description: Device time zone
+      - name: connection_type
+        description: Internet connection Type (e.g. celluar)
+      - name: trust_score
+        description: A score between 0 and 1 where 0 is untrusted (e.g. fraudulent devices) and 1 is trusted
+
+  - name: user_sets
+    description: attributes by user set
+    columns:
+      - name: user_set_id
+        description: user ser ID
+        tests:
+          - unique
+      - name: cohort_utc
+        description: the creation date of this user set
+      - name: created_at
+        description: the creation timestamp of this user set
+      - name: first_adjust_id
+        description: Adjust ID of the device first seen for this user set
+      - name: first_username
+        description: username first seen for this user set
+      - name: first_country_code
+        description: country_code first seen for this user set
+      - name: first_client_type
+        description: client_type first seen for this user set
+      - name: first_app_version
+        description: app_version first seen for this user set
+      - name: first_paid_device_date
+        description: the install date of the first device acquired from paid UA channel; the set is considered 'paid' on and after this date
+      - name: first_untrusted_device_date
+        description: the install date of the first untrusted device
+      - name: first_disabled_date
+        description: the earliest date on which one of the constituent user accounts was disabled
+
+  - name: user_email_status
+    description: the email status of users
+    columns:
+      - name: user_id_hex
+        description: user identifier
+      - name: username
+        description: username
+      - name: email_status
+        description: current email status
+        tests:
+          - accepted_values:
+              values: ['EMAIL_STATUS_INVALID', 'EMAIL_STATUS_REJECTED', 'EMAIL_STATUS_VALID', 'EMAIL_STATUS_UNKNOWN']
+      - name: updated_at
+        description: the timestamp at which email_status was last updated
+
+  - name: user_set_daily_activities
+    description: daily activity for each user_set_id
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - user_set_id
+            - client_type
+    columns:
+      - name: date_utc
+        description: active date
+        tests:
+          - not_null
+      - name: user_set_id
+        description: user set ID. If it is a user using web exclusively, the username is used in place of user_set_id
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - accepted_values:
+              values: ['TN_ANDROID', 'TN_WEB', '2L_ANDROID', 'TN_IOS_FREE', 'OTHER']
+      - name: dau
+        description: DAU
+        tests:
+          - not_null
+      - name: ad_impressions
+        description: Ad impressions for this user for this date
+        tests:
+          - not_null
+      - name: MMS_messages
+        description: How many MMS a user sent that day
+        tests:
+         - not_null
+      - name: SMS_messages
+        description: How many SMS a user sent that day
+        tests:
+          - not_null
+      - name: total_outgoing_calls
+        description: outgoing calls for the day
+        tests:
+          - not_null
+      - name: total_outgoing_call_duration
+        description: duration of the outgoing calls in seconds
+        tests:
+          - not_null
+      - name: total_outgoing_unique_calling_contacts
+        description: unique phone numbers dialed during the day
+        tests:
+          - not_null
+      - name: total_outgoing_free_calls
+        description: free outgoing calls
+        tests:
+          - not_null
+      - name: total_outgoing_paid_calls
+        description: paid outgoing calls
+        tests:
+          - not_null
+      - name: total_outgoing_domestic_calls
+        description: domestic outgoing calls
+        tests:
+          - not_null
+      - name: total_outgoing_international_calls
+        description: outgoing international calls
+        tests:
+          - not_null
+      - name: total_incoming_calls
+        description: incoming calls for the day
+        tests:
+          - not_null
+      - name: total_incoming_call_duration
+        description: duration of the incoming calls in seconds
+        tests:
+          - not_null
+      - name: total_incoming_unique_calling_contacts
+        description: unique incoming call contacts
+        tests:
+          - not_null
+      - name: total_incoming_free_calls
+        description: free incoming calls
+        tests:
+          - not_null
+      - name: total_incoming_paid_calls
+        description: paid incoming calls
+        tests:
+          - not_null
+      - name: total_incoming_domestic_calls
+        description: domestic incoming calls
+        tests:
+          - not_null
+      - name: total_incoming_international_calls
+        description: incoming international calls
+        tests:
+          - not_null
+      - name: video_call_initiations
+        description: successful video call initiations
+        tests:
+          - not_null
+
+  - name: latest_user_set_segment
+    description: latest and previous RFM segment for each user set
+    columns:
+      - name: user_set_id
+        description: user set identifier
+        tests:
+          - not_null
+      - name: previous_segment
+        description: previous RFM segment
+        tests:
+          - accepted_values:
+              values: ['loyal', 'promising', 'at_risk', 'leaving', 'infrequent', 'new_users', 'bad_sets', 'other_users']
+      - name: current_segment
+        description: current RFM segment
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['loyal', 'promising', 'at_risk', 'leaving', 'infrequent', 'new_users', 'bad_sets', 'other_users']
+      - name: updated_at
+        description: the timestamp at which RFM segment is updated for each user set
+
+
+  - name: user_daily_activities
+    description: Daily activities by username
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - username
+            - client_type
+    columns:
+      - name: date_utc
+        description: date_utc
+        tests:
+          - not_null
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - accepted_values:
+              values: ['TN_ANDROID', 'TN_IOS_FREE', 'TN_WEB', '2L_ANDROID', 'UNKNOWN']
+      - name: ad_impressions
+        description: Ad impressions for this user for this date
+        tests:
+          - not_null
+      - name: total_adjusted_revenue
+        description: total adjusted revenue for this user for this date
+        tests:
+          - not_null
+      - name: MMS_messages
+        description: How many MMS a user sent that day
+        tests:
+         - not_null
+      - name: SMS_messages
+        description: How many SMS a user sent that day
+        tests:
+          - not_null
+      - name: total_mms_cost
+        description: total cost for the user MMS sent that day
+        tests:
+         - not_null
+      - name: total_sms_cost
+        description: total cost for the user SMS sent that day
+        tests:
+          - not_null
+      - name: total_termination_cost
+        description: total cost for the user termination that day
+        tests:
+         - not_null
+      - name: total_layered_paas_cost
+        description: total cost for the user platform as a service that day
+        tests:
+          - not_null
+      - name: total_outgoing_calls
+        description: outgoing calls for the day
+        tests:
+          - not_null
+      - name: total_outgoing_call_duration
+        description: duration of the outgoing calls in seconds
+        tests:
+          - not_null
+      - name: total_outgoing_unique_calling_contacts
+        description: unique phone numbers dialed during the day
+        tests:
+          - not_null
+      - name: total_outgoing_free_calls
+        description: free outgoing calls
+        tests:
+          - not_null
+      - name: total_outgoing_paid_calls
+        description: paid outgoing calls
+        tests:
+          - not_null
+      - name: total_outgoing_domestic_calls
+        description: domestic outgoing calls
+        tests:
+          - not_null
+      - name: total_outgoing_international_calls
+        description: outgoing international calls
+        tests:
+          - not_null
+      - name: total_incoming_calls
+        description: incoming calls for the day
+        tests:
+          - not_null
+      - name: total_incoming_call_duration
+        description: duration of the incoming calls in seconds
+        tests:
+          - not_null
+      - name: total_incoming_unique_calling_contacts
+        description: unique incoming call contacts
+        tests:
+          - not_null
+      - name: total_incoming_free_calls
+        description: free incoming calls
+        tests:
+          - not_null
+      - name: total_incoming_paid_calls
+        description: paid incoming calls
+        tests:
+          - not_null
+      - name: total_incoming_domestic_calls
+        description: domestic incoming calls
+        tests:
+          - not_null
+      - name: total_incoming_international_calls
+        description: incoming international calls
+        tests:
+          - not_null
+      - name: video_call_initiations
+        description: successful video call initiations
+        tests:
+          - not_null
+
+  - name: user_daily_profit
+    description: Daily revenue/cost/profit by username
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - username
+    columns:
+      - name: date_utc
+        description: date_utc
+        tests:
+          - not_null
+      - name: username
+        description: username
+        tests:
+          - not_null
+      - name: ad_revenue
+        description: ad revenue for that user for that date
+        tests:
+          - not_null
+      - name: iap_credit_revenue
+        description: International credit revenue (net of refunds) from IAP in USD
+        tests:
+          - not_null
+      - name: iap_sub_revenue
+        description: subscription revenue (net of refunds) from IAP in USD
+        tests:
+          - not_null
+      - name: iap_other_revenue
+        description: other revenue (net of refunds) from IAP in USD
+        tests:
+          - not_null
+      - name: wireless_subscription_revenue
+        description: Wireless subscription revenue (net of refunds) in USD
+        tests:
+          - not_null
+      - name: credit_revenue
+        description: International Credits Purchase revenue (net of refunds) in USD
+        tests:
+          - not_null
+      - name: device_and_plan_revenue
+        description: Device and Plan Purchase revenue (net of refunds)
+        tests:
+          - not_null
+      - name: other_purchase_revenue
+        description: Device and Other Purchase revenue (net of refunds)
+        tests:
+          - not_null
+      - name: MMS_cost
+        description: the multimedia messaging cost for that user for that day
+        tests:
+          - not_null
+      - name: SMS_cost
+        description: the text messaging cost for that user for that day
+        tests:
+          - not_null
+      - name: message_cost
+        description: the messaging cost for that user for that day
+        tests:
+          - not_null
+      - name: calling_cost
+        description: the cost of phone calls for that user for that day
+        tests:
+          - not_null
+      - name: DID_cost
+        description: cost of having a phone number for that user for that day
+        tests:
+          - not_null
+      - name: mrc_cost
+        description: fixed cost of having a subscription to a Sprint plan for that day
+        tests:
+          - not_null
+      - name: overage_cost
+        description: data overage cost of having a subscription to a Sprint plan for that day
+        tests:
+          - not_null
+      - name: sprint_cost
+        description: cost of having a subscription to a Sprint plan for that day
+        tests:
+          - not_null
+      - name: profit
+        description: the revenues minus costs for that user for that day
+        tests:
+          - not_null
+
+  - name: analytics_user_profiles
+    description: the latest user profile changes
+    columns:
+      - name: username
+        description: username
+      - name: user_id_hex
+        description: user identifier
+      - name: updated_at
+        description: the timestamp at which user profile was last updated
+      - name: gender
+        description: user profile gender attribute
+      - name: age_range
+        description: user age_range attribute
+      - name: date_utc
+        description: the date at which user profile was last updated
+      - name: hour
+        description: the hour at which user profile was last updated
+
+  - name: user_profile_tn_usecases
+    description: Most recent use cases for a user
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - user_id_hex
+            - use_case
+    columns:
+      - name: username
+        description: username
+      - name: user_id_hex
+        description: user identifier
+      - name: created_at
+        description: the timestamp at which user use case was last created
+      - name: use case
+        description: use case for which a user is tagged to
+      - name: date_utc
+        description: the date at which user profile was last updated
+      - name: hour
+        description: the hour at which user profile was last updated
+
+  - name: incoming_calls
+    description: incoming calls
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - created_at
+            - username
+            - client_type
+    columns:
+      - name: date_utc
+        description: date_utc
+      - name: created_at
+        description: timestamp when the call came in
+      - name: username
+        description: tn user receiving the call
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - accepted_values:
+              values: ['TN_ANDROID', 'TN_WEB', '2L_ANDROID', 'TN_IOS_FREE', 'OTHER']
+      - name: session_id
+        description: derived session_id to help with identifying incoming call client type
+      - name: is_domestic
+        description: boolean - yes if call is domestic, no if not
+      - name: is_free
+        description: boolean - yes if call is free, no if not
+      - name: incoming_call_contact
+        description: phone number of the person originating the call
+      - name: country_of_origin
+        description: the two letter region code of the country where the call is coming from
+      - name: country_code_of_origin
+        description: the numerical code of the country where the call is coming from
+      - name: call_secs
+        description: call duration is seconds
+      - name: hangup_cause
+        description: cause for the hangup if occured
+      - name: call_uuid
+        description: uuid of the call
+      - name: source
+        description: source type (pstn, softphone)
+      - name: cost
+        description: incoming call cost, if any
+
+  - name: outgoing_calls
+    description: outgoing calls
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - created_at
+            - username
+            - client_type
+    columns:
+      - name: date_utc
+        description: date_utc
+      - name: created_at
+        description: timestamp when the call went out
+      - name: username
+        description: tn user placing the call
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - accepted_values:
+              values: ['TN_ANDROID', 'TN_WEB', '2L_ANDROID', 'TN_IOS_FREE', 'OTHER']
+      - name: is_domestic
+        description: boolean - yes if call is domestic, no if not
+      - name: is_free
+        description: boolean - yes if call is free, no if not
+      - name: outgoing_call_contact
+        description: phone number of the person receiving the call
+      - name: country_of_destination
+        description: the two letter region code of the country where the call is being placed to
+      - name: country_code_of_destination
+        description: the numerical code of the country where the call is being placed to
+      - name: call_secs
+        description: call duration is seconds
+      - name: hangup_cause
+        description: cause for the hangup if occured
+      - name: call_uuid
+        description: uuid of the call
+      - name: source
+        description: source type (pstn, softphone)
+      - name: term_partner
+        description: termination partner for the call
+      - name: cost
+        description: outgoing call cost, if any
+
+  - name: ua_primary_users_by_week
+    description: weekly DAU along with PU Status by username
+    columns:
+      - name: cohort_utc
+        description: When the user set was registered
+      - name: username
+        description: username
+      - name: user_set_id
+        description: user_set_id
+      - name: client_type
+        description: platform name
+      - name: week_start
+        description: Beginning of the week
+      - name: week_end
+        description: end of the week
+      - name: week_num
+        description: week number
+      - name: dau
+        description: dau
+      - name: pu
+        description:
+          if a user has 5 or more active days in a week then pu=1 else 0
+
+  - name: user_segment
+    description: current state of user attributes by username
+    columns:
+      - name: username
+        description: username
+        tests:
+          - not_null
+          - unique
+      - name: rfm_segment
+        description: RFM segment
+        tests:
+          - accepted_values:
+              values: ['loyal', 'promising', 'at_risk', 'leaving', 'infrequent', 'new_users', 'bad_sets', 'other_users', 'unknown']
+      - name: tn_type
+        description: TextNow type
+        tests:
+          - accepted_values:
+              values: ['ILD Purchasers', 'Wireless Subs', 'Ad-Free+ NWTT', 'Ad-Free+ Subs', 'Ad Supported NWTT', 'Ad Supported Free', 'unknown']
+      - name: gender
+        description: user profile gender attribute
+      - name: age_range
+        description: user age_range attribute
+      - name: country
+        description: Country Code
+      - name: state
+        description: Region / State
+      - name: city
+        description: City
+      - name: zip_code
+        description: zip code
+
+  - name: user_sandvine_app_usage
+    description: Logs Usage of every subscribers per each application Protocol
+    columns:
+      - name: date_utc
+        description: date of file creation
+      - name: starttime
+        description: start time of the application
+      - name: endtime
+        description: End time of the Application
+      - name: user_id_hex
+        description: user identifier
+      - name: username
+        description: username
+      - name: client_type
+        description: client type
+      - name: subscriberid
+        description: Unique ID assigned to the subscriber on Sandvine PTS (i.e TextNow's ICCID of the subscriber)
+      - name: subscriberip
+        description: IP-Address of the Subscriber
+      - name: uuid
+        description: UUID of the subscriber
+      - name: billing_subscription_id
+        description: Holds the subscription ID of the subscriber on TextNow Billing System
+      - name: plan
+        description: Generic Plan name of subscriber
+      - name: servname
+        description: The Service Name of the plan
+      - name: throttled
+        description: Indicates if the subscriber is currently throttled
+      - name: current_throttle_level
+        description: Current throttle level. Unit is in kbps. 0 indicates no threshold applied
+      - name: suspended
+        description: Indicates the suspension status of a subscriber.Default = false
+      - name: tosviolation
+        description: Data consumption Violation because of which the subscriber was suspended
+      - name: protocol
+        description: Application Name as recognized by Sandvine LTIP
+      - name: txbytes
+        description: Upload bytes Consumed per application name (Units is in Bytes)
+      - name: rxbytes
+        description: Download bytes Consumed per application name (Units is in Bytes)
+      - name: totalbytes
+        description: Sum of Download and Upload Bytes per application name (Units is in Bytes)
+
+  - name: voice_call_forward_events
+    description: user call forwarding events
+    columns:
+      - name: date_utc
+        description: date of the request timestamp
+      - name: request_ts
+        description: timestamp of request
+      - name: username
+        description: username
+      - name: client_type
+        description: originating client_type of request
+        tests:
+          - accepted_values:
+              values: [ 'TN_ANDROID', '2L_ANDROID', 'TN_IOS_FREE', 'TN_WEB' ]
+      - name: client_version
+        description: originating client_version of request
+      - name: client_ip
+        description: originating client_ip of request
+      - name: disable_reason
+        description: reason of disable
+      - name: route_name
+        description: route_name
+      - name: http_response_status
+        description: status code of the response to the client
+      - name: req_log
+        description: logs of the request (all metadata)

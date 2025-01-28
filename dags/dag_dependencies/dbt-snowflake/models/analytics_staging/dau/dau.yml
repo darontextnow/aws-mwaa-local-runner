@@ -1,0 +1,94 @@
+version: 2
+
+models:
+  - name: dau_user_set_active_days
+    description: record the active days of user sets in different client types and the corresponding DAU
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_utc
+            - user_set_id
+            - client_type
+    columns:
+      - name: date_utc
+        description: active date
+        tests:
+          - not_null
+      - name: user_set_id
+        description: user set IDs
+        tests:
+          - not_null
+      - name: client_type
+        description: client type
+        tests:
+          - accepted_values:
+              values: ['TN_ANDROID', 'TN_IOS', '2L_ANDROID', 'TN_IOS_FREE']
+      - name: cohort_utc
+        description: cohort date of user set in the "clinet type" platform
+        tests:
+          - not_null
+      - name: day_from_cohort
+        description: the number of days between cohort date and active date
+        tests:
+          - not_null
+      - name: dau
+        description: DAU
+        tests:
+          - not_null
+
+  - name: dau_disabled_sets
+    description: list all disabled sets and their disabled date
+    columns:
+      - name: disabled_date
+        description: disabled date
+        tests:
+          - not_null
+      - name: user_set_id
+        description: user set IDs
+        tests:
+          - not_null
+          - unique
+      - name: client_type
+        description: the latest active client type before disabled date
+        tests:
+          - accepted_values:
+              values: ['TN_ANDROID', 'TN_IOS', '2L_ANDROID', 'TN_IOS_FREE', 'Never_Active_on_Mobile']
+
+  - name: dau_user_device_history
+    description: summary of username and device association as seen in events
+    columns:
+      - name: username
+        description: username
+      - name: adid
+        description: adjust device ID
+      - name: num_days_seen
+        description: number of days the username and device were seen together
+      - name: num_sources
+        description: number of event sources where the username and device were seen together
+      - name: seen_at_registration_flag
+        description: an indicator (1/0) that tells us if the device was used to register the username
+      - name: last_date_seen
+        description: last seen together
+      - name: first_date_seen
+        description: first seen together
+      - name: processed_date
+        description: date this table was last calculated (used for table data calculation)
+      - name: num_days_seen_last_14_days
+        description: no of days seen in the last 14 days (used for table data calculation)
+      - name: sources_info
+        description: array of the sources (used for table data calculation)
+      - name: processed_date
+        description: last_processed_date (used for table data calculation)
+
+  - name: dau_bad_user_disables
+    description: list of all bad actor disabled usernames and their disabled date
+    columns:
+      - name: username
+        description: usernames of all bad actor disables
+        tests:
+          - not_null
+          - unique
+      - name: disabled_date
+        description: disabled date
+        tests:
+          - not_null

@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: messages_daily
+    columns:
+      - name: date_utc
+      - name: client_type
+      - name: client_version
+      - name: error_code
+      - name: message_direction
+      - name: message_type
+      - name: contact_type
+      - name: country_code
+      - name: city_name
+      - name: num_messages
+      - name: distinct_usernames

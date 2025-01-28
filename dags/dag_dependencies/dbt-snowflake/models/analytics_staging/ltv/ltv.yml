@@ -1,0 +1,157 @@
+version: 2
+
+models:
+
+  - name: ltv_features_activities
+    description: Device ID and their outgoing and ad impressions activity on day 3,5,7
+    columns:
+      - name: CLIENT_TYPE
+        description: platform
+      - name: ADJUST_ID
+        description: Adjust's device identifier
+      - name: INSTALLED_AT
+        description: installed date
+      - name: DATE_UTC
+        description: installed date
+      - name: AD_IMPRESSIONS_3D
+        description: number of ad impressions on day 3
+      - name: AD_IMPRESSIONS_5D
+        description: number of ad impressions on day 5
+      - name: AD_IMPRESSIONS_7D
+        description: number of ad impressions on day 7
+      - name: MMS_MESSAGES_3D
+        description: number of  MMS on day 3
+      - name: MMS_MESSAGES_5D
+        description: number of  MMS on day 5
+      - name: MMS_MESSAGES_7D
+        description: number of  MMS on day 7
+      - name: SMS_MESSAGES_3D
+        description: number of  SMS on day 3
+      - name: SMS_MESSAGES_5D
+        description: number of  SMS on day 5
+      - name: SMS_MESSAGES_7D
+        description: number of  SMS on day 7
+      - name: TOTAL_INCOMING_CALLS_3D
+        description: number of Incoming calls on day 3
+      - name: TOTAL_INCOMING_CALLS_5D
+        description: number of Incoming calls on day 5
+      - name: TOTAL_INCOMING_CALLS_7D
+        description: number of Incoming calls on day 7
+      - name: TOTAL_INCOMING_UNIQUE_CALLING_CONTACTS_3D
+        description: number of unique Incoming calling contacts on day 3
+      - name: TOTAL_INCOMING_UNIQUE_CALLING_CONTACTS_5D
+        description: number of unique Incoming calling contacts on day 5
+      - name: TOTAL_INCOMING_UNIQUE_CALLING_CONTACTS_7D
+        description: number of unique Incoming calling contacts on day 7
+      - name: TOTAL_OUTGOING_CALLS_3D
+        description: number of total outgoing calls
+      - name: TOTAL_OUTGOING_CALLS_5D
+        description: number of total outgoing calls on day 5
+      - name: TOTAL_OUTGOING_CALLS_7D
+        description: number of total outgoing calls on day 7
+      - name: TOTAL_OUTGOING_FREE_CALLS_3D
+        description: number of total outgoing free calls on day 3
+      - name: TOTAL_OUTGOING_FREE_CALLS_5D
+        description: number of total outgoing free calls on day 5
+      - name: TOTAL_OUTGOING_FREE_CALLS_7D
+        description: number of total outgoing free calls on day 7
+      - name: TOTAL_OUTGOING_UNIQUE_CALLING_CONTACTS_3D
+        description: number of total outgoing unique contacts on day 3
+      - name: TOTAL_OUTGOING_UNIQUE_CALLING_CONTACTS_5D
+        description: number of total outgoing unique contacts on day 5
+      - name: TOTAL_OUTGOING_UNIQUE_CALLING_CONTACTS_7D
+        description: number of total outgoing unique contacts on day 7
+
+  - name: ltv_features_devices
+    columns:
+      - name: CLIENT_TYPE
+      - name: ADJUST_ID
+      - name: INSTALLED_AT
+      - name: DATE_UTC
+      - name: INSTALL_NUMBER
+      - name: APP_NAME
+      - name: NETWORK_NAME
+      - name: STORE
+      - name: IMPRESSION_BASED
+      - name: IS_ORGANIC
+      - name: IS_UNTRUSTED
+      - name: MATCH_TYPE
+      - name: DEVICE_TYPE
+      - name: DEVICE_NAME
+      - name: OS_NAME
+      - name: REGION_CODE
+      - name: COUNTRY_CODE
+      - name: COUNTRY_SUBDIVISION
+      - name: CITY
+      - name: POSTAL_CODE
+      - name: LANGUAGE
+      - name: TRACKING_LIMITED
+      - name: DEEPLINK
+      - name: TIMEZONE
+      - name: CONNECTION_TYPE
+      - name: INSTALL_WEEK_OF_YEAR
+      - name: INSTALL_DOW
+      - name: INSTALL_HOUR
+      - name: CLICK_TO_INSTALL_HOURS
+
+
+  - name: ltv_features_session_stats
+    columns:
+      - name: CLIENT_TYPE
+        description: platform
+      - name: ADJUST_ID
+        description: adjust id
+      - name: INSTALLED_AT
+        description: install date
+      - name: DATE_UTC
+        description: install date
+      - name: TIME_IN_APP_3D
+        description: time in app by day 3
+      - name: TIME_IN_APP_5D
+        description: time in app by day 5
+      - name: TIME_IN_APP_7D
+        description: time in app by day 7
+      - name: NUM_PRIOR_SESSIONS_3D
+        description: number of session by day 3
+      - name: NUM_PRIOR_SESSIONS_5D
+        description: number of session by day 5
+      - name: NUM_PRIOR_SESSIONS_7D
+        description: number of session by day 7
+
+
+  - name: ltv_numbered_installs
+    description: assigns install number to installs in every user set
+    columns:
+      - name: CLIENT_TYPE
+      - name: USER_SET_ID
+      - name: ADJUST_ID
+      - name: INSTALLED_AT
+      - name: NEW_USER_INSTALL
+      - name: OLD_USER_INSTALL
+      - name: COUNTRY_CODE
+      - name: IS_ORGANIC
+      - name: DATE_UTC
+      - name: GEO
+      - name: INSTALL_NUMBER
+        description: the index of the install in the user set (1 = first install, 2 = second install, etc.)
+      - name: NEXT_ADJUST_ID
+      - name: NEXT_INSTALLED_AT
+
+
+  - name: ltv_installs_strata
+    description: each combination of install date, client type, paid/organic, week 1 DAU, geo and install number forms a stratum
+    columns:
+      - name: CLIENT_TYPE
+        description: platform
+      - name: ADJUST_ID
+        description: adjust id
+      - name: USER_SET_ID
+        description: user set id
+      - name: INSTALL_NUMBER
+        description: the index of the install in the user set (1 = first install, 2 = second install, etc.)
+      - name: INSTALL_DATE
+        description: install date
+      - name: W1_DAU
+        description: total DAU in the first 7 days of install date
+      - name: STRATA
+        description: strata id
